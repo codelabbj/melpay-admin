@@ -7,7 +7,7 @@ import { useLogin } from "@/hooks/useAuth"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Loader2, Eye, EyeOff, Shield, Sparkles } from "lucide-react"
+import { Loader2, Eye, EyeOff, Sparkles } from "lucide-react"
 import Image from "next/image";
 import logo from "@/public/logo.png"
 
