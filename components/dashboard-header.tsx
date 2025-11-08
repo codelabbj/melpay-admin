@@ -39,7 +39,7 @@ export function DashboardHeader() {
               <Image src={logo} alt="logo" className="rounded-lg h-15 w-auto"/>
             <div>
               <h1 className="text-xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
-                Zefast Admin
+                Melpay Admin
               </h1>
               <p className="text-xs text-muted-foreground font-medium">Gérez votre plateforme</p>
             </div>

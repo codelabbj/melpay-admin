@@ -34,9 +34,9 @@ export default function LoginPage() {
         
         <div className="relative z-10 flex flex-col justify-center items-center text-white p-12 w-full">
           <div className="mb-8">
-              <Image src={logo} alt="logo" className="w-20 h-20 rounded-lg border-white/20 mb-6" />
+              <Image src={logo} alt="logo" className="w-32 h-32 rounded-lg border-white/20 mb-6" />
             <h1 className="text-5xl font-bold mb-4 bg-gradient-to-r from-white to-white/80 bg-clip-text text-transparent">
-              Zefast Admin
+              Melpay Admin
             </h1>
             <p className="text-xl text-white/90 max-w-md">
               Plateforme d'administration sécurisée pour gérer votre écosystème financier
