@@ -84,6 +84,24 @@ export function NetworkDialog({ open, onOpenChange, network }: NetworkDialogProp
         active_for_deposit: network.active_for_deposit,
         active_for_with: network.active_for_with,
       })
+    }else {
+        setFormData({
+            name: "",
+            placeholder: "",
+            public_name: "",
+            country_code: "",
+            indication: "",
+            image: "",
+            withdrawal_message: null,
+            deposit_api: "connect",
+            withdrawal_api: "connect",
+            payment_by_link: false,
+            otp_required: false,
+            enable: true,
+            deposit_message: "",
+            active_for_deposit: true,
+            active_for_with: true,
+        })
     }
   }, [network])
 

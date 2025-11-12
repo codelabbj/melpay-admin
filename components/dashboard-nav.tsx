@@ -4,18 +4,18 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import {
-  Users,
-  Network,
-  Phone,
-  Award as IdCard,
-  Bell,
-  Gift,
-  ArrowLeftRight,
-  Settings,
-  LayoutDashboard,
-  Wallet,
-  Layers,
-  Bot,
+    Users,
+    Network,
+    Phone,
+    Award as IdCard,
+    Bell,
+    Gift,
+    ArrowLeftRight,
+    Settings,
+    LayoutDashboard,
+    Wallet,
+    Layers,
+    Bot, Ticket, Megaphone,
 } from "lucide-react"
 
 const navItems = [
@@ -27,6 +27,8 @@ const navItems = [
   { href: "/dashboard/notifications", label: "Notifications", icon: Bell },
   { href: "/dashboard/bonuses", label: "Bonus", icon: Gift },
   { href: "/dashboard/transactions", label: "Transactions", icon: ArrowLeftRight },
+    {href: "/dashboard/coupons", label: "Coupons", icon: Ticket },
+    {href: "/dashboard/ads", label: "Publicités", icon: Megaphone},
   { href: "/dashboard/bot-transactions", label: "Transactions Bot", icon: Bot },
   { href: "/dashboard/platforms", label: "Plateformes", icon: Layers },
   { href: "/dashboard/deposits", label: "Dépôts & Caisses", icon: Wallet },
