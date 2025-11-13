@@ -68,7 +68,7 @@ export function useDeleteAd() {
 
     return useMutation({
         mutationFn: async (id:number) => {
-            const res = await api.delete<string>(`/mobcash/ann/${id}`)
+            await api.delete<string>(`/mobcash/ann/${id}`)
         },
         onSuccess: () =>{
             toast.success("Publicité supprimée avec succès")

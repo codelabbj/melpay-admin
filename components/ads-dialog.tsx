@@ -43,7 +43,7 @@ export function AdsDialog({open, onOpenChange}: AdsDialogProps) {
         e.preventDefault()
         if (formData.image) {
             createAds.mutate(formData,{
-                onSuccess: (data) => {
+                onSuccess: () => {
                     onOpenChange(false)
                     setFormData({
                         image:null,
