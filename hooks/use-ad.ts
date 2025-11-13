@@ -1,17 +1,25 @@
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import api from "@/lib/axios";
 import {toast} from "react-hot-toast";
+import {Paginated} from "@/lib/types";
 
-export type AdInput = {
-    image: File;
-    enable:boolean
+export type Ad = {
+    id: number;
+    image: string;
+    enable: boolean;
 }
 
-export function useAd() {
+export type File = {
+    id: number;
+    file: string;
+}
+export type AdInput = Omit<Ad, "id">;
+
+export function useAd(page:number) {
     return useQuery({
         queryKey:["ads"],
         queryFn: async () => {
-            const res = await api.get<String[]>('/mobcash/ann')
+            const res = await api.get<Paginated<Ad>>('/mobcash/ann',{params:{page:page}})
             return res.data
         }
     })
@@ -21,10 +29,15 @@ export function useCreateAd(){
     const queryClient = useQueryClient()
 
     return useMutation({
-        mutationFn: async (data: AdInput) => {
-            const query = new FormData();
-            query.append("image",data.image);
-            query.append("enable",String(data.enable));
+        mutationFn: async (data: { image: File, enable: boolean }) => {
+            const uploadData = new FormData();
+            uploadData.append("file", data.image);
+            const file = (await api.post<File>('/mobcash/upload', uploadData)).data;
+
+            const query = {
+                image: file.file,
+                enable: data.enable,
+            }
             const res = await api.post<string>('/mobcash/ann', query)
             return res.data
         },

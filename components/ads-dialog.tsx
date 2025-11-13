@@ -12,6 +12,7 @@ import React, {useState} from "react";
 import {useCreateAd} from "@/hooks/use-ad";
 import CustomInput from "@/components/CustomInput";
 import {Switch} from "@/components/ui/switch";
+import {Label} from "@/components/ui/label";
 
 interface AdsDialogProps {
     open: boolean
@@ -67,18 +68,31 @@ export function AdsDialog({open, onOpenChange}: AdsDialogProps) {
                 </DialogHeader>
 
                 <div className="space-y-4">
-                    <CustomInput onChange={handleFileChange} disabled={isPending} selectedFile={formData.image} onClear={()=>formData.image=null}/>
-                    <Switch
-                        checked={formData.enable}
-                        onChange={()=>formData.enable = !formData.enable}
-                    />
+                    <div className="space-y-2">
+                        <Label htmlFor="image">Visuel de publicité</Label>
+                        <CustomInput
+                            onChange={handleFileChange}
+                            disabled={isPending}
+                            selectedFile={formData.image}
+                            onClear={()=>setFormData({...formData, image:null})}
+                        />
+                    </div>
+                    <div className="space-y-2">
+                        <Label htmlFor="enable">Activé la publicité</Label>
+                        <Switch
+                            id="enable"
+                            defaultChecked={true}
+                            required
+                            onCheckedChange={()=>setFormData({...formData, enable: !formData.enable})}
+                        />
+                    </div>
                 </div>
 
                 <DialogFooter>
                     <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isPending}>
                         Annuler
                     </Button>
-                    <Button type="submit" disabled={isPending}>
+                    <Button type="button" onClick={handleSubmit} disabled={isPending}>
                         {isPending ? (
                             <>
                                 <Loader2 className="mr-2 h-4 w-4 animate-spin" />

@@ -4,7 +4,7 @@ import {X} from "lucide-react";
 import React from "react";
 
 export type CustomInputProps = {
-    onChange: (e) => void;
+    onChange: (e:React.ChangeEvent<HTMLInputElement>) => void;
     disabled: boolean;
     selectedFile?: File | null;
     onClear?: () => void;
