@@ -12,7 +12,7 @@ import {
     AlertDialogTitle
 } from "@/components/ui/alert-dialog";
 import {useState} from "react";
-import {Ad, useAd, useDeleteAd, useUpdateAd} from "@/hooks/use-ad";
+import {Ad, useAdvertisement, useDeleteAd, useUpdateAd} from "@/hooks/use-advertisement";
 import {AdsDialog} from "@/components/ads-dialog";
 import Image from "next/image";
 import {Switch} from "@/components/ui/switch";
@@ -23,7 +23,7 @@ export default function AdsPage() {
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
     const [page,setPage] = useState(1)
 
-    const {data : ads, isLoading} = useAd(page)
+    const {data : ads, isLoading} = useAdvertisement(page)
     const deleteAd = useDeleteAd()
     const updateAd = useUpdateAd()
 

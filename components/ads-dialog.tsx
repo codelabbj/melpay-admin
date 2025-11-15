@@ -9,7 +9,7 @@ import {
 import {Button} from "@/components/ui/button";
 import {Loader2} from "lucide-react";
 import React, {useState} from "react";
-import {useCreateAd} from "@/hooks/use-ad";
+import {useCreateAd} from "@/hooks/use-advertisement";
 import CustomInput from "@/components/CustomInput";
 import {Switch} from "@/components/ui/switch";
 import {Label} from "@/components/ui/label";

@@ -15,9 +15,9 @@ export type File = {
 }
 export type AdInput = Omit<Ad, "id">;
 
-export function useAd(page:number) {
+export function useAdvertisement(page:number) {
     return useQuery({
-        queryKey:["ads"],
+        queryKey:["advertisement"],
         queryFn: async () => {
             const res = await api.get<Paginated<Ad>>('/mobcash/ann',{params:{page:page}})
             return res.data
@@ -43,7 +43,7 @@ export function useCreateAd(){
         },
         onSuccess: () =>{
             toast.success("Publicité crée avec succès")
-            queryClient.invalidateQueries({queryKey:["ads"]})
+            queryClient.invalidateQueries({queryKey:["advertisement"]})
         }
     })
 }
@@ -58,7 +58,7 @@ export function useUpdateAd() {
         },
         onSuccess: () =>{
             toast.success("Publicité mis à jour avec succès")
-            queryClient.invalidateQueries({queryKey:["ads"]})
+            queryClient.invalidateQueries({queryKey:["advertisement"]})
         }
     })
 }
@@ -72,7 +72,7 @@ export function useDeleteAd() {
         },
         onSuccess: () =>{
             toast.success("Publicité supprimée avec succès")
-            queryClient.invalidateQueries({queryKey:["ads"]})
+            queryClient.invalidateQueries({queryKey:["advertisement"]})
         }
     })
 }
