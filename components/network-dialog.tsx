@@ -17,13 +17,13 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Loader2 } from "lucide-react"
+import { Loader2, Upload } from "lucide-react"
 import { Textarea } from "@/components/ui/textarea"
 
 const NETWORK_CHOICES = [
   { value: "mtn", label: "MTN" },
   { value: "moov", label: "MOOV" },
-  { value: "card", label: "Cart" },
+  { value: "card", label: "Carte" },
   { value: "sbin", label: "Celtis" },
   { value: "orange", label: "Orange" },
   { value: "wave", label: "Wave" },
@@ -34,7 +34,7 @@ const NETWORK_CHOICES = [
 ]
 
 const API_CHOICES = [
-  { value: "connect", label: "Blaffa Connect" },
+  { value: "connect", label: "FASTXOF Connect" },
 ]
 
 interface NetworkDialogProps {
@@ -46,6 +46,8 @@ interface NetworkDialogProps {
 export function NetworkDialog({ open, onOpenChange, network }: NetworkDialogProps) {
   const createNetwork = useCreateNetwork()
   const updateNetwork = useUpdateNetwork()
+  const [selectedImage, setSelectedImage] = useState<string | null>(null)
+    const [file, setFile] = useState<File | null>(null)
 
   const [formData, setFormData] = useState<NetworkInput>({
     name: "",
@@ -84,58 +86,103 @@ export function NetworkDialog({ open, onOpenChange, network }: NetworkDialogProp
         active_for_deposit: network.active_for_deposit,
         active_for_with: network.active_for_with,
       })
-    }else {
-        setFormData({
-            name: "",
-            placeholder: "",
-            public_name: "",
-            country_code: "",
-            indication: "",
-            image: "",
-            withdrawal_message: null,
-            deposit_api: "connect",
-            withdrawal_api: "connect",
-            payment_by_link: false,
-            otp_required: false,
-            enable: true,
-            deposit_message: "",
-            active_for_deposit: true,
-            active_for_with: true,
-        })
+      setSelectedImage(network.image)
+    } else {
+      setFormData({
+        name: "",
+        placeholder: "",
+        public_name: "",
+        country_code: "",
+        indication: "",
+        image: "",
+        withdrawal_message: null,
+        deposit_api: "connect",
+        withdrawal_api: "connect",
+        payment_by_link: false,
+        otp_required: false,
+        enable: true,
+        deposit_message: "",
+        active_for_deposit: true,
+        active_for_with: true,
+      })
+      setSelectedImage(null)
     }
+    setFile(null)
   }, [network])
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0]
+        setFile(file)
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        const result = reader.result as string
+        setSelectedImage(result)
+        setFormData({ ...formData, image: result })
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const handleDialogOpenChange = (open: boolean) => {
+      if(!open) {
+          if (network) {
+              setFormData({
+                  name: network.name,
+                  placeholder: network.placeholder,
+                  public_name: network.public_name,
+                  country_code: network.country_code,
+                  indication: network.indication,
+                  image: network.image,
+                  withdrawal_message: network.withdrawal_message,
+                  deposit_api: network.deposit_api,
+                  withdrawal_api: network.withdrawal_api,
+                  payment_by_link: network.payment_by_link,
+                  otp_required: network.otp_required,
+                  enable: network.enable,
+                  deposit_message: network.deposit_message,
+                  active_for_deposit: network.active_for_deposit,
+                  active_for_with: network.active_for_with,
+              })
+              setSelectedImage(network.image)
+          } else {
+              setFormData({
+                  name: "",
+                  placeholder: "",
+                  public_name: "",
+                  country_code: "",
+                  indication: "",
+                  image: "",
+                  withdrawal_message: null,
+                  deposit_api: "connect",
+                  withdrawal_api: "connect",
+                  payment_by_link: false,
+                  otp_required: false,
+                  enable: true,
+                  deposit_message: "",
+                  active_for_deposit: true,
+                  active_for_with: true,
+              })
+              setSelectedImage(null)
+          }
+      }
+      onOpenChange(open)
+  }
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
     if (network) {
       updateNetwork.mutate(
-        { id: network.id, data: formData },
+        { id: network.id, data: formData,file:file??undefined },
         {
-          onSuccess: () => onOpenChange(false),
+          onSuccess: () => handleDialogOpenChange(false),
         },
       )
     } else {
-      createNetwork.mutate(formData, {
+      createNetwork.mutate({data:formData,file:file??undefined}, {
         onSuccess: () => {
-          onOpenChange(false)
-          setFormData({
-            name: "",
-            placeholder: "",
-            public_name: "",
-            country_code: "",
-            indication: "",
-            image: "",
-            withdrawal_message: null,
-            deposit_api: "connect",
-            withdrawal_api: "connect",
-            payment_by_link: false,
-            otp_required: false,
-            enable: true,
-            deposit_message: "",
-            active_for_deposit: true,
-            active_for_with: true,
-          })
+          handleDialogOpenChange(false)
         },
       })
     }
@@ -144,26 +191,56 @@ export function NetworkDialog({ open, onOpenChange, network }: NetworkDialogProp
   const isPending = createNetwork.isPending || updateNetwork.isPending
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleDialogOpenChange}>
       <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle>{network ? "Edit Network" : "Create Network"}</DialogTitle>
+          <DialogTitle>{network ? "Modifier le réseau" : "Créer un réseau"}</DialogTitle>
           <DialogDescription>
-            {network ? "Update the network details below." : "Add a new payment network to the system."}
+            {network ? "Mettez à jour les détails du réseau ci-dessous." : "Ajoutez un nouveau réseau de paiement au système."}
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          <div className="space-y-2">
+            <Label>Image du réseau</Label>
+            <Input
+              id="upload-input"
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              className="hidden"
+            />
+            {selectedImage ? (
+              <div
+                className="relative group w-full h-48 rounded-lg overflow-hidden"
+                onClick={() => document.getElementById("upload-input")?.click()}
+              >
+                <img src={selectedImage} alt="Aperçu du réseau" className="w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-black bg-opacity-10 flex items-center justify-center opacity-0 group-hover:opacity-70 transition-opacity cursor-pointer">
+                  <p className="text-white text-lg">Changer l'image</p>
+                </div>
+              </div>
+            ) : (
+              <div
+                onClick={() => document.getElementById("upload-input")?.click()}
+                className="border-2 border-dashed border-input rounded-lg p-8 text-center hover:border-primary/50 transition-colors cursor-pointer"
+              >
+                <Upload className="h-10 w-10 text-muted-foreground mx-auto mb-3" />
+                <p className="text-sm text-muted-foreground mb-1">Cliquez pour téléverser une image</p>
+                <p className="text-xs text-muted-foreground">PNG, JPG, JPEG</p>
+              </div>
+            )}
+          </div>
           <div className="grid gap-4 md:grid-cols-2">
             <div className="space-y-2">
-              <Label htmlFor="name">Network *</Label>
+              <Label htmlFor="name">Réseau *</Label>
               <Select
                 value={formData.name}
                 onValueChange={(value) => setFormData({ ...formData, name: value })}
                 disabled={isPending}
               >
-                <SelectTrigger id="name">
-                  <SelectValue placeholder="Select network" />
+                <SelectTrigger id="name" className="w-full">
+                  <SelectValue placeholder="Sélectionner un réseau" />
                 </SelectTrigger>
                 <SelectContent>
                   {NETWORK_CHOICES.map((network) => (
@@ -176,7 +253,7 @@ export function NetworkDialog({ open, onOpenChange, network }: NetworkDialogProp
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="public_name">Public Name *</Label>
+              <Label htmlFor="public_name">Nom Public *</Label>
               <Input
                 id="public_name"
                 value={formData.public_name}
@@ -187,7 +264,7 @@ export function NetworkDialog({ open, onOpenChange, network }: NetworkDialogProp
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="placeholder">Placeholder *</Label>
+              <Label htmlFor="placeholder">Exemple *</Label>
               <Input
                 id="placeholder"
                 value={formData.placeholder}
@@ -199,7 +276,7 @@ export function NetworkDialog({ open, onOpenChange, network }: NetworkDialogProp
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="country_code">Country Code *</Label>
+              <Label htmlFor="country_code">Code Pays *</Label>
               <Input
                 id="country_code"
                 value={formData.country_code}
@@ -211,7 +288,7 @@ export function NetworkDialog({ open, onOpenChange, network }: NetworkDialogProp
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="indication">Indication *</Label>
+              <Label htmlFor="indication">Indicatif *</Label>
               <Input
                 id="indication"
                 value={formData.indication}
@@ -223,26 +300,14 @@ export function NetworkDialog({ open, onOpenChange, network }: NetworkDialogProp
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="image">Image URL *</Label>
-              <Input
-                id="image"
-                value={formData.image}
-                onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                placeholder="https://..."
-                required
-                disabled={isPending}
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="deposit_api">Deposit API *</Label>
+              <Label htmlFor="deposit_api">API de Dépôt *</Label>
               <Select
                 value={formData.deposit_api}
                 onValueChange={(value) => setFormData({ ...formData, deposit_api: value })}
                 disabled={isPending}
               >
-                <SelectTrigger id="deposit_api">
-                  <SelectValue placeholder="Select API" />
+                <SelectTrigger id="deposit_api" className="w-full">
+                  <SelectValue placeholder="Sélectionner une API" />
                 </SelectTrigger>
                 <SelectContent>
                   {API_CHOICES.map((api) => (
@@ -255,14 +320,14 @@ export function NetworkDialog({ open, onOpenChange, network }: NetworkDialogProp
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="withdrawal_api">Withdrawal API *</Label>
+              <Label htmlFor="withdrawal_api">API de Retrait *</Label>
               <Select
                 value={formData.withdrawal_api}
                 onValueChange={(value) => setFormData({ ...formData, withdrawal_api: value })}
                 disabled={isPending}
               >
-                <SelectTrigger id="withdrawal_api">
-                  <SelectValue placeholder="Select API" />
+                <SelectTrigger id="withdrawal_api" className="w-full">
+                  <SelectValue placeholder="Sélectionner une API" />
                 </SelectTrigger>
                 <SelectContent>
                   {API_CHOICES.map((api) => (
@@ -276,7 +341,7 @@ export function NetworkDialog({ open, onOpenChange, network }: NetworkDialogProp
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="deposit_message">Deposit Message</Label>
+            <Label htmlFor="deposit_message">Message de Dépôt</Label>
             <Textarea
               id="deposit_message"
               value={formData.deposit_message}
@@ -286,7 +351,7 @@ export function NetworkDialog({ open, onOpenChange, network }: NetworkDialogProp
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="withdrawal_message">Withdrawal Message</Label>
+            <Label htmlFor="withdrawal_message">Message de Retrait</Label>
             <Textarea
               id="withdrawal_message"
               value={formData.withdrawal_message || ""}
@@ -297,7 +362,7 @@ export function NetworkDialog({ open, onOpenChange, network }: NetworkDialogProp
 
           <div className="grid gap-4 md:grid-cols-2">
             <div className="flex items-center justify-between space-x-2">
-              <Label htmlFor="enable">Enable</Label>
+              <Label htmlFor="enable">Activer</Label>
               <Switch
                 id="enable"
                 checked={formData.enable}
@@ -307,7 +372,7 @@ export function NetworkDialog({ open, onOpenChange, network }: NetworkDialogProp
             </div>
 
             <div className="flex items-center justify-between space-x-2">
-              <Label htmlFor="payment_by_link">Payment by Link</Label>
+              <Label htmlFor="payment_by_link">Paiement par Lien</Label>
               <Switch
                 id="payment_by_link"
                 checked={formData.payment_by_link}
@@ -317,7 +382,7 @@ export function NetworkDialog({ open, onOpenChange, network }: NetworkDialogProp
             </div>
 
             <div className="flex items-center justify-between space-x-2">
-              <Label htmlFor="otp_required">OTP Required</Label>
+              <Label htmlFor="otp_required">OTP Requis</Label>
               <Switch
                 id="otp_required"
                 checked={formData.otp_required}
@@ -327,7 +392,7 @@ export function NetworkDialog({ open, onOpenChange, network }: NetworkDialogProp
             </div>
 
             <div className="flex items-center justify-between space-x-2">
-              <Label htmlFor="active_for_deposit">Active for Deposit</Label>
+              <Label htmlFor="active_for_deposit">Actif pour Dépôt</Label>
               <Switch
                 id="active_for_deposit"
                 checked={formData.active_for_deposit}
@@ -337,7 +402,7 @@ export function NetworkDialog({ open, onOpenChange, network }: NetworkDialogProp
             </div>
 
             <div className="flex items-center justify-between space-x-2">
-              <Label htmlFor="active_for_with">Active for Withdrawal</Label>
+              <Label htmlFor="active_for_with">Actif pour Retrait</Label>
               <Switch
                 id="active_for_with"
                 checked={formData.active_for_with}
@@ -348,19 +413,19 @@ export function NetworkDialog({ open, onOpenChange, network }: NetworkDialogProp
           </div>
 
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isPending}>
-              Cancel
+            <Button type="button" variant="outline" className="hover:bg-primary/20" onClick={() => handleDialogOpenChange(false)} disabled={isPending}>
+              Annuler
             </Button>
             <Button type="submit" disabled={isPending}>
               {isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  {network ? "Updating..." : "Creating..."}
+                  {network ? "Mise à jour..." : "Création..."}
                 </>
               ) : network ? (
-                "Update Network"
+                "Mettre à jour le réseau"
               ) : (
-                "Create Network"
+                "Créer un réseau"
               )}
             </Button>
           </DialogFooter>

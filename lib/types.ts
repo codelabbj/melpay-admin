@@ -4,3 +4,8 @@ export interface Paginated<T>{
     previous: string | null
     results: T[]
 }
+
+export interface AppFile {
+    id: number;
+    file: string;
+}

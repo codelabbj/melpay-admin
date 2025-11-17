@@ -3,6 +3,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import api from "@/lib/axios"
 import { toast } from "react-hot-toast"
+import {Platform} from "@/hooks/usePlatforms";
 
 export interface UserAppId {
   id: number
@@ -11,6 +12,7 @@ export interface UserAppId {
   user: string | null
   telegram_user: number | null
   app_name: string
+    app_details:Platform
 }
 
 export type UserAppIdInput = {

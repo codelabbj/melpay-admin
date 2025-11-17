@@ -28,7 +28,7 @@ export function CopyButton({ value, className }: CopyButtonProps) {
     <Button
       variant="ghost"
       size="icon"
-      className={`h-6 w-6 ${className || ""}`}
+      className={`h-6 w-6 hover:bg-primary/30 rounded-sm ${className || ""}`}
       onClick={handleCopy}
       title="Copier"
     >

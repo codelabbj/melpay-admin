@@ -49,6 +49,23 @@ export function TelephoneDialog({ open, onOpenChange, telephone }: TelephoneDial
     }
   }, [telephone, networks])
 
+    const handleDialogOpenChange = (open: boolean) => {
+      if (!open){
+          if (telephone) {
+              setFormData({
+                  phone: telephone.phone,
+                  network: telephone.network,
+              })
+          } else {
+              setFormData({
+                  phone: "",
+                  network: networks?.[0]?.id || 0,
+              })
+          }
+      }
+      onOpenChange(open)
+    }
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
@@ -56,13 +73,13 @@ export function TelephoneDialog({ open, onOpenChange, telephone }: TelephoneDial
       updateTelephone.mutate(
         { id: telephone.id, data: formData },
         {
-          onSuccess: () => onOpenChange(false),
+          onSuccess: () => handleDialogOpenChange(false),
         },
       )
     } else {
       createTelephone.mutate(formData, {
         onSuccess: () => {
-          onOpenChange(false)
+          handleDialogOpenChange(false)
           setFormData({ phone: "", network: networks?.[0]?.id || 0 })
         },
       })
@@ -72,18 +89,18 @@ export function TelephoneDialog({ open, onOpenChange, telephone }: TelephoneDial
   const isPending = createTelephone.isPending || updateTelephone.isPending
 
   return (
-    <Dialog open={open} onOpenChange={onOpenChange}>
+    <Dialog open={open} onOpenChange={handleDialogOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{telephone ? "Edit Telephone" : "Add Telephone"}</DialogTitle>
+          <DialogTitle>{telephone ? "Modifier le téléphone" : "Ajouter un téléphone"}</DialogTitle>
           <DialogDescription>
-            {telephone ? "Update the telephone details below." : "Add a new telephone number to the system."}
+            {telephone ? "Mettez à jour les détails du téléphone ci-dessous." : "Ajoutez un nouveau numéro de téléphone au système."}
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="phone">Phone Number *</Label>
+            <Label htmlFor="phone">Numéro de téléphone *</Label>
             <Input
               id="phone"
               value={formData.phone}
@@ -95,14 +112,14 @@ export function TelephoneDialog({ open, onOpenChange, telephone }: TelephoneDial
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="network">Network *</Label>
+            <Label htmlFor="network">Réseau *</Label>
             <Select
               value={formData.network.toString()}
               onValueChange={(value) => setFormData({ ...formData, network: Number.parseInt(value) })}
               disabled={isPending}
             >
               <SelectTrigger id="network">
-                <SelectValue placeholder="Select a network" />
+                <SelectValue placeholder="Sélectionner un réseau" />
               </SelectTrigger>
               <SelectContent>
                 {networks?.map((network) => (
@@ -115,19 +132,19 @@ export function TelephoneDialog({ open, onOpenChange, telephone }: TelephoneDial
           </div>
 
           <DialogFooter>
-            <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isPending}>
-              Cancel
+            <Button type="button" variant="outline" className="hover:bg-primary/10" onClick={() => handleDialogOpenChange(false)} disabled={isPending}>
+              Annuler
             </Button>
             <Button type="submit" disabled={isPending}>
               {isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  {telephone ? "Updating..." : "Creating..."}
+                  {telephone ? "Mise à jour..." : "Création..."}
                 </>
               ) : telephone ? (
-                "Update"
+                "Mettre à jour"
               ) : (
-                "Create"
+                "Créer"
               )}
             </Button>
           </DialogFooter>

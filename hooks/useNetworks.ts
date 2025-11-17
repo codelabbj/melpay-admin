@@ -3,6 +3,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import api from "@/lib/axios"
 import { toast } from "react-hot-toast"
+import {AppFile} from "@/lib/types";
 
 export interface Network {
   id: number
@@ -40,7 +41,13 @@ export function useCreateNetwork() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async (data: NetworkInput) => {
+    mutationFn: async ({data,file}:{data:NetworkInput,file?:File}) => {
+        if (file) {
+            const uploadData = new FormData();
+            uploadData.append("file", file);
+            const uploadedFile = (await api.post<AppFile>('/mobcash/upload', uploadData)).data
+            data.image = uploadedFile.file
+        }
       const res = await api.post<Network>("/mobcash/network", data)
       return res.data
     },
@@ -55,9 +62,15 @@ export function useUpdateNetwork() {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: async ({ id, data }: { id: number; data: Partial<NetworkInput> }) => {
-      const res = await api.patch<Network>(`/mobcash/network/${id}`, data)
-      return res.data
+    mutationFn: async ({ id, data, file }: { id: number; data: Partial<NetworkInput>, file?:File }) => {
+        if (file) {
+            const uploadData = new FormData();
+            uploadData.append("file", file);
+            const uploadedFile = (await api.post<AppFile>('/mobcash/upload', uploadData)).data
+            data.image = uploadedFile.file
+        }
+        const res = await api.put<Network>(`/mobcash/network/${id}`, data)
+        return res.data
     },
     onSuccess: () => {
       toast.success("Network updated successfully!")

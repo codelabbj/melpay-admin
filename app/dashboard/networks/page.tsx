@@ -120,7 +120,7 @@ export default function NetworksPage() {
                         <Button variant="ghost" size="icon" onClick={() => handleEdit(network)}>
                           <Pencil className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="icon" onClick={() => handleDelete(network)}>
+                        <Button variant="ghost" size="icon" className="hover:bg-gray-500/10" onClick={() => handleDelete(network)}>
                           <Trash2 className="h-4 w-4 text-destructive" />
                         </Button>
                       </div>
@@ -146,8 +146,8 @@ export default function NetworksPage() {
             </AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel>Annuler</AlertDialogCancel>
-            <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground">
+            <AlertDialogCancel className="hover:bg-primary/10">Annuler</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
               {deleteNetwork.isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />

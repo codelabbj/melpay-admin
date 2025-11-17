@@ -9,15 +9,14 @@ import {
     TrendingUp,
     Gift,
     Bot,
-    UserPlus,
-    Share2, Award, DollarSign, Megaphone, Ticket
+    Share2, Award, DollarSign, Megaphone, Ticket, UserPlus
 } from "lucide-react"
 import {useDashboardStats} from "@/hooks/useDashboardStats";
 import {Table,TableBody, TableCell, TableHead, TableHeader, TableRow} from "@/components/ui/table";
 import {TransactionsChart} from "@/components/transactions-chart";
 import {useEffect, useState} from "react";
 import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
-import {options} from "axios";
+import {UsersChart} from "@/components/users-chart";
 
 export default function DashboardPage() {
     const { data, isLoading, isError } = useDashboardStats()
@@ -32,7 +31,12 @@ export default function DashboardPage() {
         type_trans: string
         total_amount: number
         count: number}[]>([])
+    const [userChart, setUserChart] = useState<{
+        date: string
+        count: number
+    }[]>([])
     const [volumePeriod, setVolumePeriod] = useState<"monthly"|"yearly"|"daily"|"weekly">("monthly")
+    const [usersPeriod, setUsersPeriod] = useState<"monthly"|"daily"|"weekly">("monthly")
 
     useEffect(() => {
         if (!volume) return
@@ -54,7 +58,7 @@ export default function DashboardPage() {
                 setVolumeChart(volume.evolution.monthly.map(
                     (v)=> {
                         return {
-                            date: v.month,
+                            date: new Date(v.month).toLocaleString("fr",{month:"long"}).toUpperCase(),
                             type_trans: v.type_trans,
                             total_amount: v.total_amount,
                             count: v.count,
@@ -67,7 +71,7 @@ export default function DashboardPage() {
                 setVolumeChart(volume.evolution.yearly.map(
                     (v)=> {
                         return {
-                            date: v.year,
+                            date:new Date(v.year).getFullYear().toString(),
                             type_trans: v.type_trans,
                             total_amount: v.total_amount,
                             count: v.count,
@@ -77,10 +81,59 @@ export default function DashboardPage() {
                 ))
                 break
             case "daily":
-                setVolumeChart(volume.evolution.daily)
+                setVolumeChart(volume.evolution.daily.map(
+                    (v)=> {
+                        return {
+                            date: new Date(v.date).toLocaleDateString(),
+                            type_trans: v.type_trans,
+                            total_amount: v.total_amount,
+                            count: v.count,
+                        }
+                    }
+
+                ))
         }
 
-    },[volumePeriod])
+    },[volume,volumePeriod])
+
+    useEffect(() => {
+        if (!userGrowth) return
+        switch (usersPeriod){
+            case "weekly":
+                setUserChart(userGrowth.new_users.weekly.map(
+                    (v)=> {
+                        return {
+                            date: new Date(v.week).toLocaleDateString(),
+                            count: v.count
+                        }
+                    }
+
+                ))
+                break
+            case "monthly":
+                setUserChart(userGrowth.new_users.monthly.map(
+                    (v)=> {
+                        return {
+                            date: new Date(v.month).toLocaleString("fr",{month:"long"}).toUpperCase(),
+                            count: v.count,
+                        }
+                    }
+
+                ))
+                break
+            case "daily":
+                setUserChart(userGrowth.new_users.daily.map(
+                    (v)=> {
+                        return {
+                            date: new Date(v.date).toLocaleDateString(),
+                            count: v.count,
+                        }
+                    }
+
+                ))
+        }
+
+    },[userGrowth,usersPeriod])
 
     function formatNumber(value: number | undefined | null) {
         if (value === undefined || value === null || Number.isNaN(value)) return "-"
@@ -261,6 +314,53 @@ export default function DashboardPage() {
                 </Card>
             </div>
 
+            <div className="grid gap-4 md:grid-cols-2">
+                <Card>
+                    <CardHeader>
+                        <div className="flex items-center gap-2 justify-between">
+                            <CardTitle>Evolution des transaction</CardTitle>
+                            <Select defaultValue="daily" value={volumePeriod} onValueChange={(s)=>setVolumePeriod(s as "monthly"|"yearly"|"daily"|"weekly")}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Selectionner une période"/>
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="daily">Aujourd'hui</SelectItem>
+                                    <SelectItem value="weekly">Cette semaine</SelectItem>
+                                    <SelectItem value="monthly">Ce mois</SelectItem>
+                                    <SelectItem value="yearly">Cette année</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+
+                    </CardHeader>
+                    <CardContent>
+                        <TransactionsChart data={volumeChart}/>
+                    </CardContent>
+                </Card>
+
+                <Card>
+                    <CardHeader>
+                        <div className="flex items-center gap-2 justify-between">
+                            <CardTitle>Evolution des utilisateurs</CardTitle>
+                            <Select defaultValue="daily" value={usersPeriod} onValueChange={(s)=>setUsersPeriod(s as "monthly"|"daily"|"weekly")}>
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Selectionner une période"/>
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="daily">Aujourd'hui</SelectItem>
+                                    <SelectItem value="weekly">Cette semaine</SelectItem>
+                                    <SelectItem value="monthly">Ce mois</SelectItem>
+                                </SelectContent>
+                            </Select>
+                        </div>
+
+                    </CardHeader>
+                    <CardContent>
+                        <UsersChart data={userChart}/>
+                    </CardContent>
+                </Card>
+            </div>
+
             {/* Bot Statistics */}
             <Card className="hover:shadow-lg transition-shadow duration-300">
                 <CardHeader>
@@ -306,86 +406,10 @@ export default function DashboardPage() {
                 <Card className="hover:shadow-lg transition-shadow duration-300">
                     <CardHeader>
                         <CardTitle className="flex items-center gap-2">
-                            <div className="p-2 rounded-full bg-chart-10/20">
-                                <TrendingUp className="h-5 w-5 text-chart-10" />
-                            </div>
-                            Volume des Transactions
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div>
-                            <p className="text-sm text-muted-foreground">Dépôts</p>
-                            <div className="flex items-baseline gap-2">
-                                <p className="text-2xl font-bold">
-                                    {isLoading ? "N/A" : formatCurrency(volume?.deposits?.total_amount)}
-                                </p>
-                                <p className="text-sm text-muted-foreground">
-                                    ({formatNumber(volume?.deposits?.total_count)} transactions)
-                                </p>
-                            </div>
-                        </div>
-                        <div>
-                            <p className="text-sm text-muted-foreground">Retraits</p>
-                            <div className="flex items-baseline gap-2">
-                                <p className="text-2xl font-bold">
-                                    {isLoading ? "N/A" : formatCurrency(volume?.withdrawals?.total_amount)}
-                                </p>
-                                <p className="text-sm text-muted-foreground">
-                                    ({formatNumber(volume?.withdrawals?.total_count)} transactions)
-                                </p>
-                            </div>
-                        </div>
-                        <div className="pt-2 border-t">
-                            <p className="text-sm text-muted-foreground">Volume Net</p>
-                            <p className="text-2xl font-bold text-primary">
-                                {isLoading ? "N/A" : formatCurrency(volume?.net_volume)}
-                            </p>
-                        </div>
-                    </CardContent>
-                </Card>
-
-                <Card className="hover:shadow-lg transition-shadow duration-300">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
-                            <div className="p-2 rounded-full bg-chart-2/20">
-                                <Share2 className="h-5 w-5 text-chart-2" />
-                            </div>
-                            Système de Parrainage
-                        </CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                        <div>
-                            <p className="text-sm text-muted-foreground">Parrainages</p>
-                            <p className="text-2xl font-bold">
-                                {isLoading ? "N/A" : formatNumber(referral?.parrainages_count)}
-                            </p>
-                        </div>
-                        <div>
-                            <p className="text-sm text-muted-foreground">Bonus de Parrainage Total</p>
-                            <p className="text-2xl font-bold">
-                                {isLoading ? "N/A" : formatCurrency(referral?.total_referral_bonus)}
-                            </p>
-                        </div>
-                        <div>
-                            <p className="text-sm text-muted-foreground">Taux d'Activation</p>
-                            <p className="text-2xl font-bold">
-                                {isLoading ? "N/A" : `${formatNumber(referral?.activation_rate)}%`}
-                            </p>
-                        </div>
-                    </CardContent>
-                </Card>
-            </div>
-
-            {/* User Growth & Referral */}
-            {/*
-                            <div className="grid gap-4 md:grid-cols-2">
-                <Card className="hover:shadow-lg transition-shadow duration-300">
-                    <CardHeader>
-                        <CardTitle className="flex items-center gap-2">
                             <div className="p-2 rounded-full bg-chart-3/20">
                                 <UserPlus className="h-5 w-5 text-chart-3" />
                             </div>
-                            Croissance des Utilisateurs
+                            Utilisateurs
                         </CardTitle>
                     </CardHeader>
                     <CardContent className="space-y-4">
@@ -422,32 +446,43 @@ export default function DashboardPage() {
                         </div>
                     </CardContent>
                 </Card>
+                <Card className="hover:shadow-lg transition-shadow duration-300">
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <div className="p-2 rounded-full bg-chart-2/20">
+                                <Share2 className="h-5 w-5 text-chart-2" />
+                            </div>
+                            Système de Parrainage
+                        </CardTitle>
+                    </CardHeader>
+                    <CardContent className="space-y-4">
+                        <div>
+                            <p className="text-sm text-muted-foreground">Parrainages</p>
+                            <p className="text-2xl font-bold">
+                                {isLoading ? "N/A" : formatNumber(referral?.parrainages_count)}
+                            </p>
+                        </div>
+                        <div>
+                            <p className="text-sm text-muted-foreground">Bonus de Parrainage Total</p>
+                            <p className="text-2xl font-bold">
+                                {isLoading ? "N/A" : formatCurrency(referral?.total_referral_bonus)}
+                            </p>
+                        </div>
+                        <div>
+                            <p className="text-sm text-muted-foreground">Taux d'Activation</p>
+                            <p className="text-2xl font-bold">
+                                {isLoading ? "N/A" : `${formatNumber(referral?.activation_rate)}%`}
+                            </p>
+                        </div>
+                    </CardContent>
+                </Card>
             </div>
 
+            {/* User Growth & Referral */}
+            {/*
+
+
             */}
-
-            <Card>
-                <CardHeader>
-                    <div className="flex items-center gap-2 justify-between">
-                        <CardTitle>Evolution des transaction</CardTitle>
-                        <Select defaultValue="daily" value={volumePeriod} onValueChange={(s)=>setVolumePeriod(s as "monthly"|"yearly"|"daily"|"weekly")}>
-                            <SelectTrigger>
-                                <SelectValue placeholder="Selectionner une période"/>
-                            </SelectTrigger>
-                            <SelectContent>
-                                <SelectItem value="daily">Aujourd'hui</SelectItem>
-                                <SelectItem value="weekly">Cette semaine</SelectItem>
-                                <SelectItem value="monthly">Ce mois</SelectItem>
-                                <SelectItem value="yearly">Cette année</SelectItem>
-                            </SelectContent>
-                        </Select>
-                    </div>
-
-                </CardHeader>
-                <CardContent>
-                    <TransactionsChart data={volumeChart}/>
-                </CardContent>
-            </Card>
 
 
 

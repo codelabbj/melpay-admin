@@ -18,11 +18,15 @@ export type TelephoneInput = {
   network: number
 }
 
-export function useTelephones() {
+export type phoneParams = {
+    search?: string
+}
+
+export function useTelephones(params:phoneParams = {}) {
   return useQuery({
-    queryKey: ["telephones"],
+    queryKey: ["telephones",params],
     queryFn: async () => {
-      const res = await api.get<Telephone[]>("/mobcash/user-phone/")
+      const res = await api.get<Telephone[]>("/mobcash/user-phone/",{params:params})
       return res.data
     },
   })

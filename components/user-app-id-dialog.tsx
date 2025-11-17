@@ -72,15 +72,15 @@ export function UserAppIdDialog({ open, onOpenChange, userAppId }: UserAppIdDial
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>{userAppId ? "Edit User App ID" : "Add User App ID"}</DialogTitle>
+          <DialogTitle>{userAppId ? "Modifier l'ID d'application utilisateur" : "Ajouter un ID d'application utilisateur"}</DialogTitle>
           <DialogDescription>
-            {userAppId ? "Update the user app ID details below." : "Add a new user app ID to the system."}
+            {userAppId ? "Mettez à jour les détails de l'ID d'application utilisateur ci-dessous." : "Ajoutez un nouvel ID d'application utilisateur au système."}
           </DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="user_app_id">User App ID *</Label>
+            <Label htmlFor="user_app_id">ID d'application utilisateur *</Label>
             <Input
               id="user_app_id"
               value={formData.user_app_id}
@@ -92,7 +92,7 @@ export function UserAppIdDialog({ open, onOpenChange, userAppId }: UserAppIdDial
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="app_name">App Name (UUID) *</Label>
+            <Label htmlFor="app_name">Nom de l'application (UUID) *</Label>
             <Input
               id="app_name"
               value={formData.app_name}
@@ -105,18 +105,18 @@ export function UserAppIdDialog({ open, onOpenChange, userAppId }: UserAppIdDial
 
           <DialogFooter>
             <Button type="button" variant="outline" onClick={() => onOpenChange(false)} disabled={isPending}>
-              Cancel
+              Annuler
             </Button>
             <Button type="submit" disabled={isPending}>
               {isPending ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  {userAppId ? "Updating..." : "Creating..."}
+                  {userAppId ? "Mise à jour..." : "Création..."}
                 </>
               ) : userAppId ? (
-                "Update"
+                "Mettre à jour"
               ) : (
-                "Create"
+                "Créer"
               )}
             </Button>
           </DialogFooter>
