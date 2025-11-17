@@ -6,7 +6,6 @@ import {
     Network,
     ArrowLeftRight,
     Wallet,
-    TrendingUp,
     Gift,
     Bot,
     Share2, Award, DollarSign, Megaphone, Ticket, UserPlus

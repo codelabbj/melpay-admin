@@ -1,6 +1,6 @@
 "use client"
 
-import {HTMLInputTypeAttribute, useEffect, useState} from "react"
+import {useEffect, useState} from "react"
 import { useTelephones, useDeleteTelephone, type Telephone } from "@/hooks/useTelephones"
 import { useNetworks } from "@/hooks/useNetworks"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
