@@ -24,14 +24,14 @@ export interface NotificationsResponse {
 export interface SendNotificationInput {
   content: string
   title: string
-  user_id: string
+  user_id: string|number|null
 }
 
-export function useNotifications() {
+export function useNotifications(page:number) {
   return useQuery({
-    queryKey: ["notifications"],
+    queryKey: ["notifications",page],
     queryFn: async () => {
-      const res = await api.get<NotificationsResponse>("/mobcash/notification")
+      const res = await api.get<NotificationsResponse>("/mobcash/notification",{params:{page:page}})
       return res.data
     },
   })
@@ -42,7 +42,10 @@ export function useSendNotification() {
 
   return useMutation({
     mutationFn: async (data: SendNotificationInput) => {
-      const res = await api.post(`/mobcash/notification?user_id=${data.user_id}`, {
+        const url = data.user_id
+            ? `/mobcash/notification?user_id=${data.user_id}`
+            : `/mobcash/notification`
+      const res = await api.post(url, {
         content: data.content,
         title: data.title,
       })

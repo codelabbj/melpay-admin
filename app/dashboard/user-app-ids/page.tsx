@@ -170,7 +170,7 @@ export default function UserAppIdsPage() {
                       <TableHeader>
                           <TableRow>
                               <TableHead>ID de paris</TableHead>
-                              <TableHead>Nom de l'Application</TableHead>
+                              <TableHead>Plateforme</TableHead>
                               <TableHead>Créé le</TableHead>
                               <TableHead className="text-right">Actions</TableHead>
                           </TableRow>
@@ -191,7 +191,7 @@ export default function UserAppIdsPage() {
                                           <Button variant="ghost" size="icon" onClick={() => handleEdit(userAppId)}>
                                               <Pencil className="h-4 w-4" />
                                           </Button>
-                                          <Button variant="ghost" size="icon" className="hover:bg-gray-500/10" onClick={() => handleDelete(userAppId)}>
+                                          <Button variant="ghost" size="icon" className="hover:bg-gray-500/10 dark:hover:bg-white/10" onClick={() => handleDelete(userAppId)}>
                                               <Trash2 className="h-4 w-4 text-destructive" />
                                           </Button>
                                       </div>

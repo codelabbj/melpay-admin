@@ -1,5 +1,6 @@
 import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query";
 import api from "@/lib/axios";
+import {Paginated} from "@/lib/types";
 
 export interface UserProfile{
     id: string
@@ -39,6 +40,16 @@ export function useChangePassword(){
     return useMutation({
         mutationFn: async (data:{new_password:string,confirm_new_password:string,old_password:string})=>{
             const res = await api.post('/auth/change_password',data)
+            return res.data
+        }
+    })
+}
+
+export function useUsers(search:string){
+    return useQuery({
+        queryKey: ["user_list",search],
+        queryFn: async ()=>{
+            const res = await api.get<Paginated<UserProfile>>("/auth/users",{params:{search:search}})
             return res.data
         }
     })

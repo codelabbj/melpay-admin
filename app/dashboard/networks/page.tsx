@@ -120,7 +120,7 @@ export default function NetworksPage() {
                         <Button variant="ghost" size="icon" onClick={() => handleEdit(network)}>
                           <Pencil className="h-4 w-4" />
                         </Button>
-                        <Button variant="ghost" size="icon" className="hover:bg-gray-500/10" onClick={() => handleDelete(network)}>
+                        <Button variant="ghost" size="icon" className="hover:bg-gray-500/10 dark:hover:bg-white/10" onClick={() => handleDelete(network)}>
                           <Trash2 className="h-4 w-4 text-destructive" />
                         </Button>
                       </div>

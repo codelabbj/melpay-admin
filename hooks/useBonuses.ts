@@ -9,7 +9,12 @@ export interface Bonus {
   amount: string
   reason_bonus: string
   transaction: string | null
-  user: string
+  user: {
+      id: number,
+      first_name: string,
+      last_name: string,
+      email: string,
+  }
 }
 
 export interface BonusesResponse {

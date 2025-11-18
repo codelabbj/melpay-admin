@@ -16,6 +16,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Loader2 } from "lucide-react"
+import {usePlatforms} from "@/hooks/usePlatforms";
+import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/components/ui/select";
 
 interface UserAppIdDialogProps {
   open: boolean
@@ -26,6 +28,7 @@ interface UserAppIdDialogProps {
 export function UserAppIdDialog({ open, onOpenChange, userAppId }: UserAppIdDialogProps) {
   const createUserAppId = useCreateUserAppId()
   const updateUserAppId = useUpdateUserAppId()
+    const {data:platforms} = usePlatforms()
 
   const [formData, setFormData] = useState<UserAppIdInput>({
     user_app_id: "",
@@ -92,15 +95,23 @@ export function UserAppIdDialog({ open, onOpenChange, userAppId }: UserAppIdDial
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="app_name">Nom de l'application (UUID) *</Label>
-            <Input
-              id="app_name"
-              value={formData.app_name}
-              onChange={(e) => setFormData({ ...formData, app_name: e.target.value })}
-              placeholder="e9bfa9d6-9f50-4d9a-ad8b-b017a3f1d3f2"
-              required
-              disabled={isPending}
-            />
+            <Label htmlFor="app_name">Plateforme*</Label>
+              <Select
+                  value={formData.app_name}
+                  onValueChange={(value) => setFormData({ ...formData, app_name: value })}
+                  disabled={isPending}
+              >
+                  <SelectTrigger id="app_name">
+                      <SelectValue placeholder="Sélectionner une plateforme" />
+                  </SelectTrigger>
+                  <SelectContent>
+                      {platforms?.map((platform) => (
+                          <SelectItem key={platform.id} value={platform.id}>
+                              {platform.name}
+                          </SelectItem>
+                      ))}
+                  </SelectContent>
+              </Select>
           </div>
 
           <DialogFooter>

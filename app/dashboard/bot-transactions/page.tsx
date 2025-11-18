@@ -33,20 +33,19 @@ export default function BotTransactionsPage() {
     setStatusDialogOpen(true)
   }
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case "accept":
-        return "default"
-      case "error":
-        return "destructive"
-      case "init_payment":
-        return "secondary"
-      case "pending":
-        return "outline"
-      default:
-        return "secondary"
+    const getStatusBadge = (status: string) => {
+        const statusConfig: Record<string, { variant: "default" | "pending" | "destructive" | "outline"; label: string }> = {
+            pending: { variant: "pending", label: "En attente" },
+            accept: { variant: "default", label: "Accepté" },
+            init_payment: { variant: "pending", label: "En cours" },
+            error: { variant: "destructive", label: "Erreur" },
+            reject: { variant: "destructive", label: "Rejeté" },
+            timeout: { variant: "outline", label: "Expiré" },
+        }
+
+        const config = statusConfig[status] || { variant: "outline" as const, label: status }
+        return <Badge variant={config.variant}>{config.label}</Badge>
     }
-  }
 
   const getNetworkName = (networkId: number) => {
     return networks?.find((n) => n.id === networkId)?.public_name || "Unknown"
@@ -71,8 +70,8 @@ export default function BotTransactionsPage() {
           <CardDescription>Rechercher et filtrer les bot transactions</CardDescription>
         </CardHeader>
         <CardContent>
-          <div className="grid gap-4 md:grid-cols-3">
-            <div className="space-y-2">
+          <div className="grid gap-4 md:grid-cols-6">
+            <div className="space-y-2 col-span-2">
               <Label htmlFor="search">Rechercher Référence</Label>
               <div className="relative">
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -92,7 +91,7 @@ export default function BotTransactionsPage() {
                 value={filters.type_trans || "all"}
                 onValueChange={(value) => setFilters({ ...filters, type_trans: value === "all" ? undefined : value })}
               >
-                <SelectTrigger id="type">
+                <SelectTrigger id="type" className="w-full">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -111,15 +110,17 @@ export default function BotTransactionsPage() {
                 value={filters.status || "all"}
                 onValueChange={(value) => setFilters({ ...filters, status: value === "all" ? undefined : value })}
               >
-                <SelectTrigger id="status">
+                <SelectTrigger id="status" className="w-full">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="all">Tous les Statuts</SelectItem>
-                  <SelectItem value="init_payment">En attente</SelectItem>
+                    <SelectItem value="all">Tous les Statuts</SelectItem>
+                  <SelectItem value="pending">En attente</SelectItem>
+                  <SelectItem value="init_payment">En cours</SelectItem>
                   <SelectItem value="accept">Accepté</SelectItem>
+                  <SelectItem value="reject">Rejeté</SelectItem>
                   <SelectItem value="error">Erreur</SelectItem>
-                  <SelectItem value="pending">En cours</SelectItem>
+                  <SelectItem value="timeout">Expiré</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -130,7 +131,7 @@ export default function BotTransactionsPage() {
                 value={filters.source || "all"}
                 onValueChange={(value) => setFilters({ ...filters, source: value === "all" ? undefined : value })}
               >
-                <SelectTrigger id="source">
+                <SelectTrigger id="source" className="w-full">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -150,7 +151,7 @@ export default function BotTransactionsPage() {
                   setFilters({ ...filters, network: value === "all" ? undefined : Number.parseInt(value) })
                 }
               >
-                <SelectTrigger id="network">
+                <SelectTrigger id="network" className="w-full">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -188,7 +189,6 @@ export default function BotTransactionsPage() {
                     <TableHead>Téléphone</TableHead>
                     <TableHead>Réseau</TableHead>
                     <TableHead>Statut</TableHead>
-                    <TableHead>Source</TableHead>
                     <TableHead>Créé</TableHead>
                     <TableHead className="text-right">Actions</TableHead>
                   </TableRow>
@@ -204,17 +204,14 @@ export default function BotTransactionsPage() {
                       </TableCell>
                       <TableCell>
                         <Badge variant={transaction.type_trans === "deposit" ? "default" : "secondary"}>
-                          {transaction.type_trans}
+                          {transaction.type_trans === "deposit" ? "Dépôt" :"Retrait"}
                         </Badge>
                       </TableCell>
                       <TableCell className="font-semibold">{transaction.amount} FCFA</TableCell>
                       <TableCell>{transaction.phone_number}</TableCell>
                       <TableCell>{getNetworkName(transaction.network)}</TableCell>
                       <TableCell>
-                        <Badge variant={getStatusColor(transaction.status)}>{transaction.status}</Badge>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant="outline">{transaction.source}</Badge>
+                          {getStatusBadge(transaction.status)}
                       </TableCell>
                       <TableCell>{new Date(transaction.created_at).toLocaleDateString()}</TableCell>
                       <TableCell className="text-right">

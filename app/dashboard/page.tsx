@@ -323,10 +323,10 @@ export default function DashboardPage() {
                                     <SelectValue placeholder="Selectionner une période"/>
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="daily">Aujourd'hui</SelectItem>
-                                    <SelectItem value="weekly">Cette semaine</SelectItem>
-                                    <SelectItem value="monthly">Ce mois</SelectItem>
-                                    <SelectItem value="yearly">Cette année</SelectItem>
+                                    <SelectItem value="daily">Journalier</SelectItem>
+                                    <SelectItem value="weekly">Hebdomadaire</SelectItem>
+                                    <SelectItem value="monthly">Mensuel</SelectItem>
+                                    <SelectItem value="yearly">Annuel</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>
@@ -346,9 +346,9 @@ export default function DashboardPage() {
                                     <SelectValue placeholder="Selectionner une période"/>
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="daily">Aujourd'hui</SelectItem>
-                                    <SelectItem value="weekly">Cette semaine</SelectItem>
-                                    <SelectItem value="monthly">Ce mois</SelectItem>
+                                    <SelectItem value="daily">Journalier</SelectItem>
+                                    <SelectItem value="weekly">Hebdomadaire</SelectItem>
+                                    <SelectItem value="monthly">Mensuel</SelectItem>
                                 </SelectContent>
                             </Select>
                         </div>

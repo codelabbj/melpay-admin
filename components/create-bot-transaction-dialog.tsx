@@ -5,6 +5,7 @@ import type React from "react"
 import { useState } from "react"
 import { useCreateBotDeposit, useCreateBotWithdrawal } from "@/hooks/useBotTransactions"
 import { useNetworks } from "@/hooks/useNetworks"
+import { usePlatforms } from "@/hooks/usePlatforms"
 import {
   Dialog,
   DialogContent,
@@ -28,7 +29,8 @@ interface CreateBotTransactionDialogProps {
 export function CreateBotTransactionDialog({ open, onOpenChange }: CreateBotTransactionDialogProps) {
   const createDeposit = useCreateBotDeposit()
   const createWithdrawal = useCreateBotWithdrawal()
-  const { data: networks } = useNetworks()
+  const { data: networks, isLoading: loadingNetworks } = useNetworks()
+  const { data: platforms, isLoading: loadingPlatforms } = usePlatforms()
 
   const [depositData, setDepositData] = useState({
     amount: "",
@@ -109,21 +111,21 @@ export function CreateBotTransactionDialog({ open, onOpenChange }: CreateBotTran
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-2xl">
         <DialogHeader>
-          <DialogTitle>Create Bot Transaction</DialogTitle>
-          <DialogDescription>Create a new bot deposit or withdrawal transaction</DialogDescription>
+          <DialogTitle>Créer une Transaction Bot</DialogTitle>
+          <DialogDescription>Créer un nouveau dépôt ou retrait bot</DialogDescription>
         </DialogHeader>
 
         <Tabs defaultValue="deposit" className="w-full">
           <TabsList className="grid w-full grid-cols-2">
-            <TabsTrigger value="deposit">Deposit</TabsTrigger>
-            <TabsTrigger value="withdrawal">Withdrawal</TabsTrigger>
+            <TabsTrigger value="deposit">Dépôt</TabsTrigger>
+            <TabsTrigger value="withdrawal">Retrait</TabsTrigger>
           </TabsList>
 
           <TabsContent value="deposit">
             <form onSubmit={handleDepositSubmit} className="space-y-4">
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="deposit-amount">Amount *</Label>
+                  <Label htmlFor="deposit-amount">Montant *</Label>
                   <Input
                     id="deposit-amount"
                     type="number"
@@ -136,7 +138,7 @@ export function CreateBotTransactionDialog({ open, onOpenChange }: CreateBotTran
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="deposit-phone">Phone Number *</Label>
+                  <Label htmlFor="deposit-phone">Numéro de Téléphone *</Label>
                   <Input
                     id="deposit-phone"
                     value={depositData.phone_number}
@@ -148,19 +150,31 @@ export function CreateBotTransactionDialog({ open, onOpenChange }: CreateBotTran
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="deposit-app">App UUID *</Label>
-                  <Input
-                    id="deposit-app"
+                  <Label htmlFor="deposit-app">Plateforme *</Label>
+                  <Select
                     value={depositData.app}
-                    onChange={(e) => setDepositData({ ...depositData, app: e.target.value })}
-                    placeholder="e9bfa9d6-9f50-4d9a-ad8b-b017a3f1d3f2"
-                    required
-                    disabled={createDeposit.isPending}
-                  />
+                    onValueChange={(value) => setDepositData({ ...depositData, app: value })}
+                    disabled={createDeposit.isPending || loadingPlatforms}
+                  >
+                    <SelectTrigger id="deposit-app" className="w-full">
+                      <SelectValue placeholder="Sélectionner une plateforme..." />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {platforms !== undefined && platforms.length > 0 ? (
+                        platforms.map((platform) => (
+                          <SelectItem key={platform.id} value={platform.id}>
+                            {platform.name}
+                          </SelectItem>
+                        ))
+                      ) : (
+                        <SelectItem value="None">Aucune plateforme disponible</SelectItem>
+                      )}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="deposit-user-app-id">User App ID *</Label>
+                  <Label htmlFor="deposit-user-app-id">ID de paris *</Label>
                   <Input
                     id="deposit-user-app-id"
                     value={depositData.user_app_id}
@@ -172,14 +186,14 @@ export function CreateBotTransactionDialog({ open, onOpenChange }: CreateBotTran
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="deposit-network">Network *</Label>
+                  <Label htmlFor="deposit-network">Réseau *</Label>
                   <Select
                     value={depositData.network}
                     onValueChange={(value) => setDepositData({ ...depositData, network: value })}
-                    disabled={createDeposit.isPending}
+                    disabled={createDeposit.isPending || loadingNetworks}
                   >
-                    <SelectTrigger id="deposit-network">
-                      <SelectValue placeholder="Select network" />
+                    <SelectTrigger className="w-full" id="deposit-network">
+                      <SelectValue placeholder="Sélectionner un réseau" />
                     </SelectTrigger>
                     <SelectContent>
                       {networks?.map((network) => (
@@ -187,24 +201,6 @@ export function CreateBotTransactionDialog({ open, onOpenChange }: CreateBotTran
                           {network.public_name}
                         </SelectItem>
                       ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="deposit-source">Source *</Label>
-                  <Select
-                    value={depositData.source}
-                    onValueChange={(value: "web" | "mobile" | "bot") => setDepositData({ ...depositData, source: value })}
-                    disabled={createDeposit.isPending}
-                  >
-                    <SelectTrigger id="deposit-source">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="web">Web</SelectItem>
-                      <SelectItem value="mobile">Mobile</SelectItem>
-                      <SelectItem value="bot">Bot</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -216,17 +212,18 @@ export function CreateBotTransactionDialog({ open, onOpenChange }: CreateBotTran
                   variant="outline"
                   onClick={() => onOpenChange(false)}
                   disabled={createDeposit.isPending}
+                  className="hover:bg-primary/10"
                 >
-                  Cancel
+                  Annuler
                 </Button>
                 <Button type="submit" disabled={createDeposit.isPending}>
                   {createDeposit.isPending ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Creating...
+                      Création...
                     </>
                   ) : (
-                    "Create Bot Deposit"
+                    "Créer le Dépôt Bot"
                   )}
                 </Button>
               </DialogFooter>
@@ -237,7 +234,7 @@ export function CreateBotTransactionDialog({ open, onOpenChange }: CreateBotTran
             <form onSubmit={handleWithdrawalSubmit} className="space-y-4">
               <div className="grid gap-4 md:grid-cols-2">
                 <div className="space-y-2">
-                  <Label htmlFor="withdrawal-amount">Amount *</Label>
+                  <Label htmlFor="withdrawal-amount">Montant *</Label>
                   <Input
                     id="withdrawal-amount"
                     type="number"
@@ -250,7 +247,7 @@ export function CreateBotTransactionDialog({ open, onOpenChange }: CreateBotTran
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="withdrawal-phone">Phone Number *</Label>
+                  <Label htmlFor="withdrawal-phone">Numéro de Téléphone *</Label>
                   <Input
                     id="withdrawal-phone"
                     value={withdrawalData.phone_number}
@@ -262,19 +259,31 @@ export function CreateBotTransactionDialog({ open, onOpenChange }: CreateBotTran
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="withdrawal-app">App UUID *</Label>
-                  <Input
-                    id="withdrawal-app"
+                  <Label htmlFor="withdrawal-app">Plateforme *</Label>
+                  <Select
                     value={withdrawalData.app}
-                    onChange={(e) => setWithdrawalData({ ...withdrawalData, app: e.target.value })}
-                    placeholder="e9bfa9d6-9f50-4d9a-ad8b-b017a3f1d3f2"
-                    required
-                    disabled={createWithdrawal.isPending}
-                  />
+                    onValueChange={(value) => setWithdrawalData({ ...withdrawalData, app: value })}
+                    disabled={createWithdrawal.isPending || loadingPlatforms}
+                  >
+                    <SelectTrigger id="withdrawal-app" className="w-full">
+                      <SelectValue placeholder="Sélectionner une plateforme" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {platforms !== undefined && platforms.length > 0 ? (
+                        platforms.map((platform) => (
+                          <SelectItem key={platform.id} value={platform.id}>
+                            {platform.name}
+                          </SelectItem>
+                        ))
+                      ) : (
+                        <SelectItem value="None">Aucune plateforme disponible</SelectItem>
+                      )}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="withdrawal-user-app-id">User App ID *</Label>
+                  <Label htmlFor="withdrawal-user-app-id">ID de paris *</Label>
                   <Input
                     id="withdrawal-user-app-id"
                     value={withdrawalData.user_app_id}
@@ -286,7 +295,7 @@ export function CreateBotTransactionDialog({ open, onOpenChange }: CreateBotTran
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="withdrawal-code">Withdrawal Code *</Label>
+                  <Label htmlFor="withdrawal-code">Code de Retrait *</Label>
                   <Input
                     id="withdrawal-code"
                     value={withdrawalData.withdriwal_code}
@@ -298,14 +307,14 @@ export function CreateBotTransactionDialog({ open, onOpenChange }: CreateBotTran
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="withdrawal-network">Network *</Label>
+                  <Label htmlFor="withdrawal-network">Réseau *</Label>
                   <Select
                     value={withdrawalData.network}
                     onValueChange={(value) => setWithdrawalData({ ...withdrawalData, network: value })}
-                    disabled={createWithdrawal.isPending}
+                    disabled={createWithdrawal.isPending || loadingNetworks}
                   >
-                    <SelectTrigger id="withdrawal-network">
-                      <SelectValue placeholder="Select network" />
+                    <SelectTrigger className="w-full" id="withdrawal-network">
+                      <SelectValue placeholder="Sélectionner un réseau" />
                     </SelectTrigger>
                     <SelectContent>
                       {networks?.map((network) => (
@@ -313,24 +322,6 @@ export function CreateBotTransactionDialog({ open, onOpenChange }: CreateBotTran
                           {network.public_name}
                         </SelectItem>
                       ))}
-                    </SelectContent>
-                  </Select>
-                </div>
-
-                <div className="space-y-2">
-                  <Label htmlFor="withdrawal-source">Source *</Label>
-                  <Select
-                    value={withdrawalData.source}
-                    onValueChange={(value: "web" | "mobile" | "bot") => setWithdrawalData({ ...withdrawalData, source: value })}
-                    disabled={createWithdrawal.isPending}
-                  >
-                    <SelectTrigger id="withdrawal-source">
-                      <SelectValue />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="web">Web</SelectItem>
-                      <SelectItem value="mobile">Mobile</SelectItem>
-                      <SelectItem value="bot">Bot</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -342,17 +333,18 @@ export function CreateBotTransactionDialog({ open, onOpenChange }: CreateBotTran
                   variant="outline"
                   onClick={() => onOpenChange(false)}
                   disabled={createWithdrawal.isPending}
+                  className="hover:bg-primary/10"
                 >
-                  Cancel
+                  Annuler
                 </Button>
                 <Button type="submit" disabled={createWithdrawal.isPending}>
                   {createWithdrawal.isPending ? (
                     <>
                       <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                      Creating...
+                      Création...
                     </>
                   ) : (
-                    "Create Bot Withdrawal"
+                    "Créer le Retrait Bot"
                   )}
                 </Button>
               </DialogFooter>

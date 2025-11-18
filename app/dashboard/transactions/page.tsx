@@ -33,21 +33,19 @@ export default function TransactionsPage() {
     setStatusDialogOpen(true)
   }
 
-  const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
-      case "accept":
-        return "default" // Green (success)
-      case "reject":
-        return "destructive" // Red (error)
-      case "pending":
-        return "secondary" // Gray/neutral
-      case "timeout":
-        return "outline" // Border only
-      default:
-        return "secondary" // Default fallback
-    }
-  }
+    const getStatusBadge = (status: string) => {
+        const statusConfig: Record<string, { variant: "default" | "pending" | "destructive" | "outline"; label: string }> = {
+            pending: { variant: "pending", label: "En attente" },
+            accept: { variant: "default", label: "Accepté" },
+            init_payment: { variant: "pending", label: "En cours" },
+            error: { variant: "destructive", label: "Erreur" },
+            reject: { variant: "destructive", label: "Rejeté" },
+            timeout: { variant: "outline", label: "Expiré" },
+        }
 
+        const config = statusConfig[status] || { variant: "outline" as const, label: status }
+        return <Badge variant={config.variant}>{config.label}</Badge>
+    }
   const getNetworkName = (networkId: number) => {
     return networks?.find((n) => n.id === networkId)?.public_name || "Unknown"
   }
@@ -70,9 +68,9 @@ export default function TransactionsPage() {
           <CardTitle className="text-lg font-semibold">Filtres</CardTitle>
           <CardDescription className="text-sm">Rechercher et filtrer les transactions</CardDescription>
         </CardHeader>
-        <CardContent className="pt-6">
-          <div className="grid gap-4 md:grid-cols-3">
-            <div className="space-y-2">
+        <CardContent className="pt-2">
+          <div className="grid gap-4 md:grid-cols-6">
+            <div className="space-y-2 col-span-2">
               <Label htmlFor="search">Rechercher Référence</Label>
               <div className="relative">
                 <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
@@ -92,7 +90,7 @@ export default function TransactionsPage() {
                 value={filters.type_trans || "all"}
                 onValueChange={(value) => setFilters({ ...filters, type_trans: value === "all" ? undefined : value })}
               >
-                <SelectTrigger id="type">
+                <SelectTrigger className="w-full" id="type">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -109,15 +107,17 @@ export default function TransactionsPage() {
                 value={filters.status || "all"}
                 onValueChange={(value) => setFilters({ ...filters, status: value === "all" ? undefined : value })}
               >
-                <SelectTrigger id="status">
+                <SelectTrigger className="w-full" id="status">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="all">Tous les Statuts</SelectItem>
                   <SelectItem value="pending">En attente</SelectItem>
+                  <SelectItem value="init_payment">En cours</SelectItem>
                   <SelectItem value="accept">Accepté</SelectItem>
                   <SelectItem value="reject">Rejeté</SelectItem>
-                  <SelectItem value="timeout">Expiré</SelectItem>
+                    <SelectItem value="error">Erreur</SelectItem>
+                    <SelectItem value="timeout">Expiré</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -128,7 +128,7 @@ export default function TransactionsPage() {
                 value={filters.source || "all"}
                 onValueChange={(value) => setFilters({ ...filters, source: value === "all" ? undefined : value })}
               >
-                <SelectTrigger id="source">
+                <SelectTrigger className="w-full" id="source">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -147,7 +147,7 @@ export default function TransactionsPage() {
                   setFilters({ ...filters, network: value === "all" ? undefined : Number.parseInt(value) })
                 }
               >
-                <SelectTrigger id="network">
+                <SelectTrigger className="w-full" id="network">
                   <SelectValue />
                 </SelectTrigger>
                 <SelectContent>
@@ -173,7 +173,7 @@ export default function TransactionsPage() {
             </div>
           </div>
         </CardHeader>
-        <CardContent className="p-0">
+        <CardContent>
           {isLoading ? (
             <div className="flex justify-center py-8">
               <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -206,14 +206,14 @@ export default function TransactionsPage() {
                         </TableCell>
                         <TableCell>
                           <Badge variant={transaction.type_trans === "deposit" ? "default" : "secondary"} className="font-medium">
-                            {transaction.type_trans}
+                            {transaction.type_trans === "deposit" ? 'Dépôt': 'Retrait'}
                           </Badge>
                         </TableCell>
                         <TableCell className="font-semibold text-foreground">{transaction.amount} FCFA</TableCell>
                         <TableCell className="text-foreground">{transaction.phone_number}</TableCell>
                         <TableCell className="text-foreground">{getNetworkName(transaction.network)}</TableCell>
                         <TableCell>
-                          <Badge variant={getStatusColor(transaction.status)} className="font-medium">{transaction.status}</Badge>
+                            {getStatusBadge(transaction.status)}
                         </TableCell>
                         <TableCell>
                           <Badge variant="outline" className="font-medium">{transaction.source}</Badge>

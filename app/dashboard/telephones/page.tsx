@@ -198,7 +198,7 @@ export default function TelephonesPage() {
                                         <Button variant="ghost" size="icon" onClick={() => handleEdit(telephone)}>
                                             <Pencil className="h-4 w-4" />
                                         </Button>
-                                        <Button variant="ghost" size="icon" className="hover:bg-gray-500/10" onClick={() => handleDelete(telephone)}>
+                                        <Button variant="ghost" size="icon" className="hover:bg-gray-500/10 dark:hover:bg-white/10" onClick={() => handleDelete(telephone)}>
                                             <Trash2 className="h-4 w-4 text-destructive" />
                                         </Button>
                                     </div>

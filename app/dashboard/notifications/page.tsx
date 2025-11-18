@@ -1,18 +1,19 @@
 "use client"
 
 import { useState } from "react"
-import { useNotifications } from "@/hooks/useNotifications"
+import { useNotifications} from "@/hooks/useNotifications"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
 import { Loader2, Plus } from "lucide-react"
 import { SendNotificationDialog } from "@/components/send-notification-dialog"
-import { CopyButton } from "@/components/copy-button"
+import TablePagination from "@/components/table-pagination";
 
 export default function NotificationsPage() {
-  const { data: notificationsData, isLoading } = useNotifications()
+    const [page,setPage] = useState(1)
+    const { data: notificationsData, isLoading } = useNotifications(page)
   const [dialogOpen, setDialogOpen] = useState(false)
+    const pageSize = 10
 
   return (
     <div className="space-y-6">
@@ -36,7 +37,7 @@ export default function NotificationsPage() {
             </div>
           </div>
         </CardHeader>
-        <CardContent className="p-0">
+        <CardContent>
           {isLoading ? (
             <div className="flex justify-center py-12">
               <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -46,41 +47,22 @@ export default function NotificationsPage() {
               <Table>
                 <TableHeader>
                   <TableRow className="bg-muted/50 hover:bg-muted/50 border-b border-border/50">
-                    <TableHead className="font-semibold text-muted-foreground h-12">ID</TableHead>
                     <TableHead className="font-semibold text-muted-foreground">Titre</TableHead>
                     <TableHead className="font-semibold text-muted-foreground">Contenu</TableHead>
-                    <TableHead className="font-semibold text-muted-foreground">ID Utilisateur</TableHead>
-                    <TableHead className="font-semibold text-muted-foreground">Statut</TableHead>
                     <TableHead className="font-semibold text-muted-foreground">Créé le</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>
                   {notificationsData.results.map((notification, index) => (
                     <TableRow key={notification.id} className={index % 2 === 0 ? "bg-card" : "bg-muted/20"}>
-                      <TableCell className="font-medium text-foreground">
-                        <div className="flex items-center gap-2">
-                          {notification.id}
-                          <CopyButton value={notification.id} />
-                        </div>
-                      </TableCell>
-                      <TableCell className="font-semibold text-foreground">{notification.title}</TableCell>
-                      <TableCell className="max-w-md truncate text-muted-foreground">{notification.content}</TableCell>
-                      <TableCell className="font-mono text-xs text-muted-foreground">
-                        <div className="flex items-center gap-2">
-                          {notification.user}
-                          <CopyButton value={notification.user} />
-                        </div>
-                      </TableCell>
-                      <TableCell>
-                        <Badge variant={notification.is_read ? "secondary" : "default"} className="font-medium">
-                          {notification.is_read ? "Lu" : "Non lu"}
-                        </Badge>
-                      </TableCell>
+                        <TableCell className="font-semibold text-foreground">{notification.title}</TableCell>
+                      <TableCell className="max-w-md align-middle whitespace-normal break-words text-muted-foreground">{notification.content}</TableCell>
                       <TableCell className="text-muted-foreground text-sm">{new Date(notification.created_at).toLocaleDateString()}</TableCell>
                     </TableRow>
                   ))}
                 </TableBody>
               </Table>
+                <TablePagination page={page} pageSize={pageSize} total={notificationsData.count} disableNextPage={!notificationsData.next} disablePreviousPage={!notificationsData.previous} onChangePage={setPage}/>
             </div>
           ) : (
             <div className="text-center py-12 text-muted-foreground">Aucune notification trouvée</div>

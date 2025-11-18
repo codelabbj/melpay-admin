@@ -19,6 +19,7 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Loader2 } from "lucide-react"
+import {usePlatforms} from "@/hooks/usePlatforms";
 
 interface CreateTransactionDialogProps {
   open: boolean
@@ -28,7 +29,8 @@ interface CreateTransactionDialogProps {
 export function CreateTransactionDialog({ open, onOpenChange }: CreateTransactionDialogProps) {
   const createDeposit = useCreateDeposit()
   const createWithdrawal = useCreateWithdrawal()
-  const { data: networks } = useNetworks()
+  const { data: networks, isLoading: loadingNetworks } = useNetworks()
+    const {data:platforms, isLoading:loadingPlatforms} = usePlatforms()
 
   const [depositData, setDepositData] = useState({
     amount: "",
@@ -148,19 +150,30 @@ export function CreateTransactionDialog({ open, onOpenChange }: CreateTransactio
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="deposit-app">App UUID *</Label>
-                  <Input
-                    id="deposit-app"
-                    value={depositData.app}
-                    onChange={(e) => setDepositData({ ...depositData, app: e.target.value })}
-                    placeholder="e9bfa9d6-9f50-4d9a-ad8b-b017a3f1d3f2"
-                    required
-                    disabled={createDeposit.isPending}
-                  />
+                  <Label htmlFor="deposit-app">Plateforme *</Label>
+                    <Select
+                        value={depositData.app}
+                        onValueChange={(value)=>setDepositData({...depositData,app:value})}
+                        disabled={createDeposit.isPending||loadingPlatforms}
+                    >
+                        <SelectTrigger id="deposit-app" className="w-full">
+                            <SelectValue placeholder="Sélectionner une plateforme..."/>
+                        </SelectTrigger>
+                        <SelectContent>
+                            {
+                                platforms!== undefined && platforms.length>0 ?
+                                    platforms.map((platform) => (
+                                        <SelectItem value={platform.id}>{platform.name}</SelectItem>
+                                    )):(
+                                        <SelectItem value="None">Aucune plateforme disponible</SelectItem>
+                                    )
+                            }
+                        </SelectContent>
+                    </Select>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="deposit-user-app-id">User App ID *</Label>
+                  <Label htmlFor="deposit-user-app-id">ID de paris *</Label>
                   <Input
                     id="deposit-user-app-id"
                     value={depositData.user_app_id}
@@ -176,9 +189,9 @@ export function CreateTransactionDialog({ open, onOpenChange }: CreateTransactio
                   <Select
                     value={depositData.network}
                     onValueChange={(value) => setDepositData({ ...depositData, network: value })}
-                    disabled={createDeposit.isPending}
+                    disabled={createDeposit.isPending|| loadingNetworks}
                   >
-                    <SelectTrigger id="deposit-network">
+                    <SelectTrigger className="w-full" id="deposit-network">
                       <SelectValue placeholder="Sélectionner un réseau" />
                     </SelectTrigger>
                     <SelectContent>
@@ -198,7 +211,7 @@ export function CreateTransactionDialog({ open, onOpenChange }: CreateTransactio
                     onValueChange={(value: "web" | "mobile") => setDepositData({ ...depositData, source: value })}
                     disabled={createDeposit.isPending}
                   >
-                    <SelectTrigger id="deposit-source">
+                    <SelectTrigger className="w-full" id="deposit-source">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -261,19 +274,30 @@ export function CreateTransactionDialog({ open, onOpenChange }: CreateTransactio
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="withdrawal-app">App UUID *</Label>
-                  <Input
-                    id="withdrawal-app"
-                    value={withdrawalData.app}
-                    onChange={(e) => setWithdrawalData({ ...withdrawalData, app: e.target.value })}
-                    placeholder="e9bfa9d6-9f50-4d9a-ad8b-b017a3f1d3f2"
-                    required
-                    disabled={createWithdrawal.isPending}
-                  />
+                  <Label htmlFor="withdrawal-app">Plateforme *</Label>
+                    <Select
+                        value={withdrawalData.app}
+                        onValueChange={(value)=>setWithdrawalData({ ...withdrawalData, app: value })}
+                        disabled={createWithdrawal.isPending||loadingPlatforms}
+                    >
+                        <SelectTrigger id="withdrawal-app" className="w-full">
+                            <SelectValue placeholder="Sélectionner une plateforme"/>
+                        </SelectTrigger>
+                        <SelectContent>
+                            {
+                                platforms!== undefined && platforms.length>0 ?
+                                    platforms.map((platform) => (
+                                        <SelectItem value={platform.id}>{platform.name}</SelectItem>
+                                    )):(
+                                        <SelectItem value="None">Aucune plateforme disponible</SelectItem>
+                                    )
+                            }
+                        </SelectContent>
+                    </Select>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="withdrawal-user-app-id">User App ID *</Label>
+                  <Label htmlFor="withdrawal-user-app-id">ID de paris *</Label>
                   <Input
                     id="withdrawal-user-app-id"
                     value={withdrawalData.user_app_id}
@@ -323,7 +347,7 @@ export function CreateTransactionDialog({ open, onOpenChange }: CreateTransactio
                     onValueChange={(value: "web" | "mobile") => setWithdrawalData({ ...withdrawalData, source: value })}
                     disabled={createWithdrawal.isPending}
                   >
-                    <SelectTrigger id="withdrawal-source">
+                    <SelectTrigger className="w-full" id="withdrawal-source">
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
@@ -340,6 +364,7 @@ export function CreateTransactionDialog({ open, onOpenChange }: CreateTransactio
                     variant="outline"
                     onClick={() => onOpenChange(false)}
                     disabled={createWithdrawal.isPending}
+                    className="hover:bg-primary/10"
                   >
                     Annuler
                   </Button>

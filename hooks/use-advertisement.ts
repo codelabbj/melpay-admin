@@ -9,7 +9,7 @@ export type Ad = {
     enable: boolean;
 }
 
-export type File = {
+export type AppFile = {
     id: number;
     file: string;
 }
@@ -32,7 +32,7 @@ export function useCreateAd(){
         mutationFn: async (data: { image: File, enable: boolean }) => {
             const uploadData = new FormData();
             uploadData.append("file", data.image);
-            const file = (await api.post<File>('/mobcash/upload', uploadData)).data;
+            const file = (await api.post<AppFile>('/mobcash/upload', uploadData)).data;
 
             const query = {
                 image: file.file,
@@ -53,7 +53,7 @@ export function useUpdateAd() {
 
     return useMutation({
         mutationFn: async ({id,enabled}:{id:number,enabled:boolean}) => {
-            const res = await api.put<string>(`/mobcash/ann/${id}`,{enable:enabled})
+            const res = await api.patch<string>(`/mobcash/ann/${id}`,{enable:enabled})
             return res.data
         },
         onSuccess: () =>{

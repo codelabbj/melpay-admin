@@ -1,7 +1,7 @@
 "use client"
 
 import {Button} from "@/components/ui/button";
-import {Loader2, Plus, Trash2} from "lucide-react";
+import {Loader2, Plus, Trash2, CheckCircle2, XCircle} from "lucide-react";
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
 import TablePagination from "@/components/table-pagination";
 import {
@@ -15,7 +15,7 @@ import {useState} from "react";
 import {Ad, useAdvertisement, useDeleteAd, useUpdateAd} from "@/hooks/use-advertisement";
 import {AdsDialog} from "@/components/ads-dialog";
 import Image from "next/image";
-import {Switch} from "@/components/ui/switch";
+import { Badge } from "@/components/ui/badge";
 
 export default function AdsPage() {
     const [adToDelete,setAdToDelete] = useState<Ad|null>(null)
@@ -75,24 +75,58 @@ export default function AdsPage() {
                         </div>
                     ) : ads && ads.results.length > 0 ? (
                         <>
-                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5">
                                 {ads.results.map((ad)=>(
-                                    <div key={ad.id} className="relative group border rounded-md overflow-hidden aspect-square">
-                                        <Image src={ad.image} alt={`image-ad-${ad.id}`} fill className="object-cover w-full h-full"/>
-                                        <div className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                                            <div className="flex items-center gap-4">
-                                                <div className="flex items-center space-x-2">
-                                                    <Switch
-                                                        id={`enable-ad-${ad.id}`}
-                                                        checked={ad.enable}
-                                                        onCheckedChange={() => updateAd.mutate({id: ad.id, enabled: !ad.enable})}
-                                                    />
-                                                    <label htmlFor={`enable-ad-${ad.id}`} className="text-white font-medium">
-                                                        {ad.enable ? "Activé" : "Désactivé"}
-                                                    </label>
-                                                </div>
-                                                <Button variant="ghost" size="icon" onClick={() => handleDelete(ad)}>
-                                                    <Trash2 className="h-5 w-5 text-destructive" />
+                                    <div key={ad.id} className="group relative overflow-hidden rounded-lg border border-border/50 bg-card shadow-sm hover:shadow-lg transition-all duration-300">
+                                        {/* Image Container */}
+                                        <div className="relative overflow-hidden bg-muted aspect-square">
+                                            <Image
+                                                src={ad.image}
+                                                alt={`image-ad-${ad.id}`}
+                                                fill
+                                                className="object-cover w-full h-full group-hover:scale-110 transition-transform duration-300"
+                                            />
+
+                                            {/* Status Badge */}
+                                            <div className="absolute top-2 right-2">
+                                                {ad.enable ? (
+                                                    <Badge className="bg-emerald-500 hover:bg-emerald-600 flex items-center gap-1">
+                                                        <CheckCircle2 className="h-3 w-3" />
+                                                        Actif
+                                                    </Badge>
+                                                ) : (
+                                                    <Badge className="bg-slate-500 hover:bg-slate-600 flex items-center gap-1">
+                                                        <XCircle className="h-3 w-3" />
+                                                        Inactif
+                                                    </Badge>
+                                                )}
+                                            </div>
+                                        </div>
+
+                                        {/* Actions Overlay */}
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col items-center justify-end p-4">
+                                            <div className="flex items-center gap-2 w-full">
+                                                <Button
+                                                    variant="ghost"
+                                                    size="sm"
+                                                    className="flex-1 text-white hover:bg-white/20"
+                                                    onClick={() => updateAd.mutate({id: ad.id, enabled: !ad.enable})}
+                                                    disabled={updateAd.isPending}
+                                                >
+                                                    {updateAd.isPending ? (
+                                                        <Loader2 className="h-4 w-4 animate-spin" />
+                                                    ) : (
+                                                        <>{ad.enable ? "Désactiver" : "Activer"}</>
+                                                    )}
+                                                </Button>
+                                                <Button
+                                                    variant="ghost"
+                                                    size="icon"
+                                                    className="text-destructive hover:bg-destructive/20"
+                                                    onClick={() => handleDelete(ad)}
+                                                    disabled={deleteAd.isPending}
+                                                >
+                                                    <Trash2 className="h-4 w-4" />
                                                 </Button>
                                             </div>
                                         </div>
@@ -118,8 +152,8 @@ export default function AdsPage() {
                         </AlertDialogDescription>
                     </AlertDialogHeader>
                     <AlertDialogFooter>
-                        <AlertDialogCancel className="hover:bg-primary/20">Annuler</AlertDialogCancel>
-                        <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground">
+                        <AlertDialogCancel className="hover:bg-primary/10">Annuler</AlertDialogCancel>
+                        <AlertDialogAction onClick={confirmDelete} className="bg-destructive text-destructive-foreground hover:bg-destructive/90">
                             {deleteAd.isPending ? (
                                 <>
                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />

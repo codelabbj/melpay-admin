@@ -5,7 +5,7 @@ import api from "@/lib/axios"
 
 export interface DepositItem {
   id: number
-  bet_app: {
+  bet_app_detail: {
     id: string
     name: string
     image: string
@@ -32,9 +32,16 @@ export interface DepositsResponse {
   results: DepositItem[]
 }
 
+export interface DepositFilters {
+    page?: number
+    page_size?: number
+    bet_app?: string
+    search?: string
+}
+
 export interface Caisse {
   id: number
-  bet_app: {
+  bet_app_details: {
     id: string
     name: string
     image: string
@@ -54,11 +61,15 @@ export interface Caisse {
   updated_at: string | null
 }
 
-export function useDeposits(bet_app?: string) {
+export function useDeposits(filters:DepositFilters) {
   return useQuery({
-    queryKey: ["deposits", bet_app],
+    queryKey: ["deposits", filters],
     queryFn: async () => {
-      const params = bet_app ? { bet_app } : {}
+        const params: Record<string, string | number> = {}
+        if (filters.page) params.page = filters.page
+        if (filters.page_size) params.page_size = filters.page_size
+        if (filters.bet_app) params.bet_app = filters.bet_app
+        if (filters.search) params.search = filters.search
       const res = await api.get<DepositsResponse>("/mobcash/list-deposit", { params })
       return res.data
     },
