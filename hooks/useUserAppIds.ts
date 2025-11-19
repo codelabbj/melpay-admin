@@ -20,11 +20,19 @@ export type UserAppIdInput = {
   app_name: string
 }
 
-export function useUserAppIds() {
+export type UserAppIdFilters  = {
+    search?: string,
+    app_name?: string
+}
+
+export function useUserAppIds(filters: UserAppIdFilters) {
   return useQuery({
-    queryKey: ["user-app-ids"],
+    queryKey: ["user-app-ids",filters],
     queryFn: async () => {
-      const res = await api.get<UserAppId[]>("/mobcash/user-app-id/")
+        let params:UserAppIdFilters = {}
+        if (filters.app_name && filters.app_name!=="") params.app_name=filters.app_name
+        if (filters.search && filters.search!=="") params.search=filters.search
+      const res = await api.get<UserAppId[]>("/mobcash/user-app-id/",{params})
       return res.data
     },
   })

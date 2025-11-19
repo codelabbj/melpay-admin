@@ -29,32 +29,16 @@ export default function PlatformsPage() {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [platformToDelete, setPlatformToDelete] = useState<Platform | null>(null)
   const [currentPage, setCurrentPage] = useState<number>(1)
-  const [search, setSearch] = useState("")
-  const [statusFilter, setStatusFilter] = useState<string>("all")
   const itemsPerPage = 10
 
-  const params = {
-    search: search || undefined,
-    enable: statusFilter === "all" ? undefined : statusFilter === "active",
-  }
 
-  const { data: rawPlatforms, isLoading } = usePlatforms(params)
+  const { data: rawPlatforms, isLoading } = usePlatforms({})
   const deletePlatform = useDeletePlatform()
 
   const platforms = rawPlatforms ?? []
   const startIndex = (currentPage - 1) * itemsPerPage
   const endIndex = startIndex + itemsPerPage
   const paginatedPlatforms = platforms.slice(startIndex, endIndex)
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearch(e.target.value)
-    setCurrentPage(1)
-  }
-
-  const handleStatusChange = (value: string) => {
-    setStatusFilter(value)
-    setCurrentPage(1)
-  }
 
   const handleEdit = (platform: Platform) => {
     setSelectedPlatform(platform)
@@ -94,43 +78,6 @@ export default function PlatformsPage() {
           Ajouter Plateforme
         </Button>
       </div>
-
-      <Card className="border border-border/50 shadow-sm">
-        <CardHeader className="border-b border-border/50 bg-muted/30">
-          <CardTitle className="text-lg font-semibold">Filtres</CardTitle>
-          <CardDescription className="text-sm">Rechercher et filtrer les plateformes</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid gap-4 md:grid-cols-2">
-            <div className="space-y-2">
-              <Label htmlFor="search">Rechercher</Label>
-              <div className="relative">
-                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                <Input
-                  id="search"
-                  placeholder="Rechercher par nom de plateforme"
-                  value={search}
-                  onChange={handleSearchChange}
-                  className="pl-8"
-                />
-              </div>
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="status">Statut</Label>
-              <Select value={statusFilter} onValueChange={handleStatusChange}>
-                <SelectTrigger id="status">
-                  <SelectValue />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Tous</SelectItem>
-                  <SelectItem value="active">Actif</SelectItem>
-                  <SelectItem value="inactive">Inactif</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
 
       <Card className="border border-border/50 shadow-sm">
         <CardHeader className="border-b border-border/50 bg-muted/30">

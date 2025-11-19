@@ -28,7 +28,7 @@ interface UserAppIdDialogProps {
 export function UserAppIdDialog({ open, onOpenChange, userAppId }: UserAppIdDialogProps) {
   const createUserAppId = useCreateUserAppId()
   const updateUserAppId = useUpdateUserAppId()
-    const {data:platforms} = usePlatforms()
+    const {data:platforms} = usePlatforms({})
 
   const [formData, setFormData] = useState<UserAppIdInput>({
     user_app_id: "",

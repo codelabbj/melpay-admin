@@ -6,26 +6,23 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import { Loader2, Wallet, Search } from "lucide-react"
+import {Loader2, Wallet, Plus, Filter} from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { CopyButton } from "@/components/copy-button"
 import { usePlatforms } from "@/hooks/usePlatforms"
+import {CreateDepositDialog} from "@/components/create-deposit-dialog";
 
 export default function DepositsPage() {
   const [filters, setFilters] = useState<DepositFilters>({
     page: 1,
     page_size: 10,
   })
+    const [createDialogOpen,setCreateDialogOpen] = useState(false)
   const { data: depositsData, isLoading: depositsLoading } = useDeposits(filters)
   const { data: caisses, isLoading: caissesLoading } = useCaisses()
   const { data: platforms } = usePlatforms({})
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFilters({ ...filters, search: e.target.value || undefined, page: 1 })
-  }
 
   const handlePlatformChange = (value: string) => {
     setFilters({ ...filters, bet_app: value === "all" ? undefined : value, page: 1 })
@@ -33,10 +30,16 @@ export default function DepositsPage() {
 
   return (
     <div className="space-y-6">
-      <div>
-        <h2 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Dépôts & Caisses</h2>
-        <p className="text-muted-foreground">Consultez les dépôts et soldes de caisse</p>
-      </div>
+        <div className="flex items-center justify-between">
+            <div>
+                <h2 className="text-3xl font-bold tracking-tight bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">Dépôts & Caisses</h2>
+                <p className="text-muted-foreground">Consultez les dépôts et soldes de caisse</p>
+            </div>
+            <Button onClick={() => setCreateDialogOpen(true)}>
+                <Plus className="mr-2 h-4 w-4" />
+                Créer un Dépôt
+            </Button>
+        </div>
 
       <Tabs defaultValue="caisses" className="w-full">
         <TabsList>
@@ -82,34 +85,33 @@ export default function DepositsPage() {
         </TabsContent>
 
         <TabsContent value="deposits" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Filtres</CardTitle>
-              <CardDescription>Rechercher et filtrer les dépôts</CardDescription>
+          <Card className="border-l-4 border-l-primary">
+            <CardHeader className="pb-3">
+              <div className="flex items-center gap-2">
+                <Filter className="h-5 w-5 text-primary" />
+                <div>
+                  <CardTitle>Filtres</CardTitle>
+                  <CardDescription>Filtrez les dépôts par plateforme</CardDescription>
+                </div>
+              </div>
             </CardHeader>
             <CardContent>
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid gap-4 md:grid-cols-3 lg:grid-cols-4">
                 <div className="space-y-2">
-                  <Label htmlFor="search">Rechercher</Label>
-                  <div className="relative">
-                    <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                    <Input
-                      id="search"
-                      placeholder="Rechercher par référence ou numéro..."
-                      value={filters.search || ""}
-                      onChange={handleSearchChange}
-                      className="pl-8"
-                    />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="platform">Plateforme</Label>
+                  <Label htmlFor="platform" className="font-semibold text-sm">
+                    Plateforme
+                  </Label>
                   <Select value={filters.bet_app || "all"} onValueChange={handlePlatformChange}>
-                    <SelectTrigger id="platform">
-                      <SelectValue />
+                    <SelectTrigger
+                      id="platform"
+                      className="bg-background hover:bg-accent/50 transition-colors"
+                    >
+                      <SelectValue placeholder="Sélectionner..." />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">Toutes les Plateformes</SelectItem>
+                      <SelectItem value="all" className="font-medium">
+                        Toutes les Plateformes
+                      </SelectItem>
                       {platforms?.map((platform) => (
                         <SelectItem key={platform.id} value={platform.id}>
                           {platform.name}
@@ -118,6 +120,19 @@ export default function DepositsPage() {
                     </SelectContent>
                   </Select>
                 </div>
+
+                {filters.bet_app && (
+                  <div className="flex items-end">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setFilters({ ...filters, bet_app: undefined, page: 1 })}
+                      className="w-full hover:bg-destructive/10 hover:text-destructive"
+                    >
+                      Réinitialiser
+                    </Button>
+                  </div>
+                )}
               </div>
             </CardContent>
           </Card>
@@ -188,6 +203,7 @@ export default function DepositsPage() {
           </Card>
         </TabsContent>
       </Tabs>
+        <CreateDepositDialog open={createDialogOpen} onOpenChange={setCreateDialogOpen}/>
     </div>
   )
 }

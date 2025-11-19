@@ -26,8 +26,8 @@ import {Select, SelectContent, SelectItem, SelectTrigger, SelectValue} from "@/c
 import {usePlatforms} from "@/hooks/usePlatforms";
 
 export default function UserAppIdsPage() {
-  const { data: RawUserAppIds, isLoading } = useUserAppIds()
-    const {data: platforms } = usePlatforms()
+
+    const {data: platforms } = usePlatforms({})
   const deleteUserAppId = useDeleteUserAppId()
 
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -36,7 +36,11 @@ export default function UserAppIdsPage() {
   const [userAppIdToDelete, setUserAppIdToDelete] = useState<UserAppId | null>(null)
     const [platformFilter, setPlatformFilter] = useState<string>("all")
     const [search, setSearch] = useState<string>("")
-    const [userAppIds, setUserAppIds] = useState<UserAppId[]>([])
+
+    const { data: userAppIds, isLoading } = useUserAppIds({
+        search:search,
+        app_name:platformFilter === "all" ? undefined : platformFilter,
+    })
 
     const [currentPage, setCurrentPage] = useState<number>(1)
     const itemsPerPage = 10
@@ -83,20 +87,6 @@ export default function UserAppIdsPage() {
         setCurrentPage(1)
     }
 
-    useEffect(() => {
-        if (!platformFilter || !RawUserAppIds) return
-        if (platformFilter === "all") {
-            setUserAppIds(RawUserAppIds)
-            return;
-        }
-        const data = RawUserAppIds.filter((u)=> u.app_name === platformFilter)
-        setUserAppIds(data)
-    }, [platforms,platformFilter]);
-
-    useEffect(() => {
-        setUserAppIds(RawUserAppIds??[])
-    }, [RawUserAppIds]);
-
   return (
     <div className="space-y-6">
       <div className="flex items-center justify-between">
@@ -123,7 +113,7 @@ export default function UserAppIdsPage() {
                             <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
                             <Input
                                 id="search"
-                                placeholder="Rechercher par numéros de téléphones"
+                                placeholder="Rechercher par IDs de paris"
                                 value={search}
                                 onChange={handleSearchChange}
                                 className="pl-8"

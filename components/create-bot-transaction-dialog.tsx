@@ -30,7 +30,7 @@ export function CreateBotTransactionDialog({ open, onOpenChange }: CreateBotTran
   const createDeposit = useCreateBotDeposit()
   const createWithdrawal = useCreateBotWithdrawal()
   const { data: networks, isLoading: loadingNetworks } = useNetworks()
-  const { data: platforms, isLoading: loadingPlatforms } = usePlatforms()
+  const { data: platforms, isLoading: loadingPlatforms } = usePlatforms({})
 
   const [depositData, setDepositData] = useState({
     amount: "",

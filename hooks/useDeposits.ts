@@ -1,7 +1,8 @@
 "use client"
 
-import { useQuery } from "@tanstack/react-query"
+import {useMutation, useQuery, useQueryClient} from "@tanstack/react-query"
 import api from "@/lib/axios"
+import {toast} from "react-hot-toast";
 
 export interface DepositItem {
   id: number
@@ -84,4 +85,28 @@ export function useCaisses() {
       return res.data
     },
   })
+}
+
+export interface CreateDepositInput {
+    amount: number
+    bet_app: string
+}
+
+export function useCreateDeposit() {
+    const queryClient = useQueryClient()
+
+    return useMutation({
+        mutationFn: async (data: CreateDepositInput) => {
+            const res = await api.post("/mobcash/deposit", data)
+            return res.data
+        },
+        onSuccess: () => {
+            toast.success("Dépôt créé avec succès!")
+            queryClient.invalidateQueries({ queryKey: ["deposits"] })
+            queryClient.invalidateQueries({ queryKey: ["caisses"] })
+        },
+        onError: (error: any) => {
+            toast.error(error?.response?.data?.detail || "Erreur lors de la création du dépôt")
+        },
+    })
 }
