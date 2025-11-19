@@ -12,7 +12,6 @@ interface LoginPayload {
 }
 
 export function useLogin() {
-  const router = useRouter()
 
   return useMutation({
     mutationFn: async (data: LoginPayload) => {
