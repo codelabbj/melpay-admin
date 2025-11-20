@@ -41,7 +41,7 @@ export function useCreateTelephone() {
       return res.data
     },
     onSuccess: () => {
-      toast.success("Telephone created successfully!")
+      toast.success("Téléphone créé avec succès!")
       queryClient.invalidateQueries({ queryKey: ["telephones"] })
     },
   })
@@ -56,7 +56,7 @@ export function useUpdateTelephone() {
       return res.data
     },
     onSuccess: () => {
-      toast.success("Telephone updated successfully!")
+      toast.success("Téléphone mis à jour avec succès!")
       queryClient.invalidateQueries({ queryKey: ["telephones"] })
     },
   })
@@ -70,7 +70,7 @@ export function useDeleteTelephone() {
       await api.delete(`/mobcash/user-phone/${id}/`)
     },
     onSuccess: () => {
-      toast.success("Telephone deleted successfully!")
+      toast.success("Téléphone supprimé avec succès!")
       queryClient.invalidateQueries({ queryKey: ["telephones"] })
     },
   })

@@ -58,7 +58,7 @@ export function useCreatePlatform() {
       return res.data
     },
     onSuccess: () => {
-      toast.success("Platform created successfully!")
+      toast.success("Plateforme créée avec succès!")
       queryClient.invalidateQueries({ queryKey: ["platforms"] })
     },
   })

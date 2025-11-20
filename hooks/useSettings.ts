@@ -44,7 +44,7 @@ export function useUpdateSettings() {
             return res.data
         },
         onSuccess: () => {
-            toast.success("Settings updated successfully!")
+            toast.success("Paramètres mis à jour avec succès!")
             queryClient.invalidateQueries({ queryKey: ["settings"] })
         },
     })

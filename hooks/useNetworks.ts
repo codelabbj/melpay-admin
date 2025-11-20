@@ -52,7 +52,7 @@ export function useCreateNetwork() {
       return res.data
     },
     onSuccess: () => {
-      toast.success("Network created successfully!")
+      toast.success("Réseau créé avec succès!")
       queryClient.invalidateQueries({ queryKey: ["networks"] })
     },
   })
@@ -73,7 +73,7 @@ export function useUpdateNetwork() {
         return res.data
     },
     onSuccess: () => {
-      toast.success("Network updated successfully!")
+      toast.success("Réseau mis à jour avec succès!")
       queryClient.invalidateQueries({ queryKey: ["networks"] })
     },
   })
@@ -87,7 +87,7 @@ export function useDeleteNetwork() {
       await api.delete(`/mobcash/network/${id}`)
     },
     onSuccess: () => {
-      toast.success("Network deleted successfully!")
+      toast.success("Réseau supprimé avec succès!")
       queryClient.invalidateQueries({ queryKey: ["networks"] })
     },
   })

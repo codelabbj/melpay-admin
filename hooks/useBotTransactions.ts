@@ -105,7 +105,7 @@ export function useCreateBotDeposit() {
       return res.data
     },
     onSuccess: () => {
-      toast.success("Bot deposit transaction created successfully!")
+      toast.success("Transaction de dépôt bot créée avec succès!")
       queryClient.invalidateQueries({ queryKey: ["bot-transactions"] })
     },
   })
@@ -120,7 +120,7 @@ export function useCreateBotWithdrawal() {
       return res.data
     },
     onSuccess: () => {
-      toast.success("Bot withdrawal transaction created successfully!")
+      toast.success("Transaction de retrait bot créée avec succès!")
       queryClient.invalidateQueries({ queryKey: ["bot-transactions"] })
     },
   })
@@ -135,7 +135,7 @@ export function useChangeBotTransactionStatus() {
       return res.data
     },
     onSuccess: () => {
-      toast.success("Bot transaction status updated successfully!")
+      toast.success("Statut de la transaction bot mis à jour avec succès!")
       queryClient.invalidateQueries({ queryKey: ["bot-transactions"] })
     },
   })

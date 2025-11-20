@@ -33,7 +33,7 @@ export function useCreateCoupon(){
             return res.data
         },
         onSuccess: ()=>{
-          toast.success("Coupon created successfully.");
+          toast.success("Coupon créé avec succès.");
           queryClient.invalidateQueries({queryKey:["coupons"]});
         }
     })
@@ -48,7 +48,7 @@ export function useUpdateCoupon(){
             return res.data
         },
         onSuccess:()=>{
-            toast.success("Coupon updated successfully.");
+            toast.success("Coupon mis à jour avec succès.");
             queryClient.invalidateQueries({queryKey:["coupons"]});
         }
     })
@@ -62,7 +62,7 @@ export function useDeleteCoupon(){
             await api.delete(`/mobcash/coupon/${id}`)
         },
         onSuccess: ()=>{
-            toast.success("Coupon deleted successfully!")
+            toast.success("Coupon supprimé avec succès!")
             queryClient.invalidateQueries({queryKey:["coupons"]})
         }
     })

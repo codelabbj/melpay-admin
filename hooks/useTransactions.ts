@@ -105,7 +105,7 @@ export function useCreateDeposit() {
       return res.data
     },
     onSuccess: () => {
-      toast.success("Deposit transaction created successfully!")
+      toast.success("Transaction de dépôt créée avec succès!")
       queryClient.invalidateQueries({ queryKey: ["transactions"] })
     },
   })
@@ -120,7 +120,7 @@ export function useCreateWithdrawal() {
       return res.data
     },
     onSuccess: () => {
-      toast.success("Withdrawal transaction created successfully!")
+      toast.success("Transaction de retrait créée avec succès!")
       queryClient.invalidateQueries({ queryKey: ["transactions"] })
     },
   })
@@ -135,7 +135,7 @@ export function useChangeTransactionStatus() {
       return res.data
     },
     onSuccess: () => {
-      toast.success("Transaction status updated successfully!")
+      toast.success("Statut de la transaction mis à jour avec succès!")
       queryClient.invalidateQueries({ queryKey: ["transactions"] })
     },
   })
