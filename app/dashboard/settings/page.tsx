@@ -55,6 +55,13 @@ export default function SettingsPage() {
         orange_default_link: settings.orange_default_link,
         mtn_default_link: settings.mtn_default_link,
       })
+    } else if (section === "merchant") {
+      setEditData({
+        moov_marchand_phone: settings.moov_marchand_phone,
+        orange_marchand_phone: settings.orange_marchand_phone,
+        bf_moov_marchand_phone: settings.bf_moov_marchand_phone,
+        bf_orange_marchand_phone: settings.bf_orange_marchand_phone,
+      })
     }
     setOpenDialog(section)
   }
@@ -317,6 +324,52 @@ export default function SettingsPage() {
               </div>
             </CardContent>
           </Card>
+
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
+              <div>
+                <CardTitle>Téléphones Commerçants</CardTitle>
+                <CardDescription>Numéros de téléphone des commerçants partenaires</CardDescription>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => handleEditClick("merchant")}
+              >
+                <Edit2 className="h-4 w-4" />
+              </Button>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-sm font-medium">Téléphone Moov</span>
+                  <Badge variant="outline">{settings.moov_marchand_phone || "N/A"}</Badge>
+                </div>
+                <p className="text-xs text-muted-foreground">Numéro de commerçant Moov</p>
+              </div>
+              <div>
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-sm font-medium">Téléphone Orange</span>
+                  <Badge variant="outline">{settings.orange_marchand_phone || "N/A"}</Badge>
+                </div>
+                <p className="text-xs text-muted-foreground">Numéro de commerçant Orange</p>
+              </div>
+              <div>
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-sm font-medium">Téléphone Moov BF</span>
+                  <Badge variant="outline">{settings.bf_moov_marchand_phone || "N/A"}</Badge>
+                </div>
+                <p className="text-xs text-muted-foreground">Numéro de commerçant Moov Burkina Faso</p>
+              </div>
+              <div>
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-sm font-medium">Téléphone Orange BF</span>
+                  <Badge variant="outline">{settings.bf_orange_marchand_phone || "N/A"}</Badge>
+                </div>
+                <p className="text-xs text-muted-foreground">Numéro de commerçant Orange Burkina Faso</p>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       ) : (
         <div className="text-center py-8 text-muted-foreground">Aucun paramètre trouvé</div>
@@ -573,6 +626,80 @@ export default function SettingsPage() {
                 value={editData.mtn_default_link || ""}
                 onChange={(e) => setEditData({ ...editData, mtn_default_link: e.target.value })}
                 placeholder="https://..."
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => setOpenDialog(null)}
+              className="hover:bg-primary/10"
+            >
+              Annuler
+            </Button>
+            <Button
+              onClick={handleSave}
+              disabled={updateSettings.isPending}
+            >
+              {updateSettings.isPending ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Sauvegarde...
+                </>
+              ) : (
+                "Sauvegarder"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+
+      {/* Merchant Phones Dialog */}
+      <Dialog open={openDialog === "merchant"} onOpenChange={(open) => !open && setOpenDialog(null)}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Éditer Téléphones Commerçants</DialogTitle>
+            <DialogDescription>Mettez à jour les numéros de téléphone des commerçants partenaires</DialogDescription>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <Label htmlFor="moov_marchand_phone">Téléphone Moov</Label>
+              <Input
+                id="moov_marchand_phone"
+                type="text"
+                value={editData.moov_marchand_phone || ""}
+                onChange={(e) => setEditData({ ...editData, moov_marchand_phone: e.target.value })}
+                placeholder="ex: +225XXXXXXXXXX"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="orange_marchand_phone">Téléphone Orange</Label>
+              <Input
+                id="orange_marchand_phone"
+                type="text"
+                value={editData.orange_marchand_phone || ""}
+                onChange={(e) => setEditData({ ...editData, orange_marchand_phone: e.target.value })}
+                placeholder="ex: +225XXXXXXXXXX"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="bf_moov_marchand_phone">Téléphone Moov BF</Label>
+              <Input
+                id="bf_moov_marchand_phone"
+                type="text"
+                value={editData.bf_moov_marchand_phone || ""}
+                onChange={(e) => setEditData({ ...editData, bf_moov_marchand_phone: e.target.value })}
+                placeholder="ex: +226XXXXXXXXXX"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="bf_orange_marchand_phone">Téléphone Orange BF</Label>
+              <Input
+                id="bf_orange_marchand_phone"
+                type="text"
+                value={editData.bf_orange_marchand_phone || ""}
+                onChange={(e) => setEditData({ ...editData, bf_orange_marchand_phone: e.target.value })}
+                placeholder="ex: +226XXXXXXXXXX"
               />
             </div>
           </div>

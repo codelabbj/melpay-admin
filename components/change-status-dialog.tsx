@@ -25,15 +25,12 @@ interface ChangeStatusDialogProps {
 
 export function ChangeStatusDialog({ open, onOpenChange, transaction }: ChangeStatusDialogProps) {
   const changeStatus = useChangeTransactionStatus()
-  const [status, setStatus] = useState<"accept" | "reject" | "pending">("pending")
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault()
+  const handleSubmit = () => {
     if (!transaction) return
 
     changeStatus.mutate(
       {
-        status,
         reference: transaction.reference,
       },
       {
@@ -47,45 +44,34 @@ export function ChangeStatusDialog({ open, onOpenChange, transaction }: ChangeSt
       <DialogContent>
         <DialogHeader>
           <DialogTitle>Changer le Statut de Transaction</DialogTitle>
-          <DialogDescription>Mettre à jour le statut de la transaction : {transaction?.reference}</DialogDescription>
+            <DialogDescription>
+                Êtes-vous sûr de vouloir changer le statut de cette transaction ?
+                <br />
+                <strong>Référence:</strong> {transaction?.reference}
+                <br />
+                <strong>Montant:</strong> {transaction?.amount} FCFA
+            </DialogDescription>
         </DialogHeader>
-
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="status">Nouveau Statut *</Label>
-            <Select value={status} onValueChange={(value: any) => setStatus(value)} disabled={changeStatus.isPending}>
-              <SelectTrigger id="status">
-                <SelectValue />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="pending">En attente</SelectItem>
-                <SelectItem value="accept">Accepter</SelectItem>
-                <SelectItem value="reject">Rejeter</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-
           <DialogFooter>
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-              disabled={changeStatus.isPending}
-            >
-              Annuler
-            </Button>
-            <Button type="submit" disabled={changeStatus.isPending}>
-              {changeStatus.isPending ? (
-                <>
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Mise à jour...
-                </>
-              ) : (
-                "Mettre à jour"
-              )}
-            </Button>
+              <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => onOpenChange(false)}
+                  disabled={changeStatus.isPending}
+              >
+                  Annuler
+              </Button>
+              <Button onClick={handleSubmit} disabled={changeStatus.isPending}>
+                  {changeStatus.isPending ? (
+                      <>
+                          <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                          Mise à jour...
+                      </>
+                  ) : (
+                      "Mettre à jour"
+                  )}
+              </Button>
           </DialogFooter>
-        </form>
       </DialogContent>
     </Dialog>
   )

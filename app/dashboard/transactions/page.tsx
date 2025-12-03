@@ -1,7 +1,12 @@
 "use client"
 
 import { useState } from "react"
-import { useTransactions, type Transaction, type TransactionFilters } from "@/hooks/useTransactions"
+import {
+    useTransactions,
+    type Transaction,
+    type TransactionFilters,
+    useCheckTransactionStatus
+} from "@/hooks/useTransactions"
 import { useNetworks } from "@/hooks/useNetworks"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
@@ -10,9 +15,10 @@ import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
-import { Loader2, Plus, Search, RefreshCw } from "lucide-react"
+import {Loader2, Plus, Search, RefreshCw, Eye} from "lucide-react"
 import { CreateTransactionDialog } from "@/components/create-transaction-dialog"
 import { ChangeStatusDialog } from "@/components/change-status-dialog"
+import { CheckTransactionStatusDialog } from "@/components/check-transaction-status-dialog"
 import { CopyButton } from "@/components/copy-button"
 
 export default function TransactionsPage() {
@@ -23,10 +29,12 @@ export default function TransactionsPage() {
 
   const { data: transactionsData, isLoading } = useTransactions(filters)
   const { data: networks } = useNetworks()
+    const checkTransactionStatus = useCheckTransactionStatus()
 
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
   const [statusDialogOpen, setStatusDialogOpen] = useState(false)
   const [selectedTransaction, setSelectedTransaction] = useState<Transaction | null>(null)
+    const [checkStatusDialogOpen, setCheckStatusDialogOpen] = useState(false)
 
   const handleChangeStatus = (transaction: Transaction) => {
     setSelectedTransaction(transaction)
@@ -219,7 +227,14 @@ export default function TransactionsPage() {
                           <Badge variant="outline" className="font-medium">{transaction.source}</Badge>
                         </TableCell>
                         <TableCell className="text-muted-foreground text-sm">{new Date(transaction.created_at).toLocaleDateString()}</TableCell>
-                        <TableCell className="text-right">
+                        <TableCell className="flex justify-center gap-4 items-center text-right">
+                            <Button variant="ghost" size="sm" onClick={() => {
+                              setSelectedTransaction(transaction)
+                              setCheckStatusDialogOpen(true)
+                            }} className="font-medium">
+                                <Eye className="h-4 w-4 mr-1"/>
+                                Vérifier status
+                            </Button>
                           <Button variant="ghost" size="sm" onClick={() => handleChangeStatus(transaction)} className="font-medium">
                             <RefreshCw className="h-4 w-4 mr-1" />
                             Changer Statut
@@ -265,6 +280,11 @@ export default function TransactionsPage() {
       <ChangeStatusDialog
         open={statusDialogOpen}
         onOpenChange={setStatusDialogOpen}
+        transaction={selectedTransaction}
+      />
+      <CheckTransactionStatusDialog
+        open={checkStatusDialogOpen}
+        onOpenChange={setCheckStatusDialogOpen}
         transaction={selectedTransaction}
       />
     </div>

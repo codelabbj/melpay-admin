@@ -30,7 +30,7 @@ export function CreateTransactionDialog({ open, onOpenChange }: CreateTransactio
   const createDeposit = useCreateDeposit()
   const createWithdrawal = useCreateWithdrawal()
   const { data: networks, isLoading: loadingNetworks } = useNetworks()
-    const {data:platforms, isLoading:loadingPlatforms} = usePlatforms()
+    const {data:platforms, isLoading:loadingPlatforms} = usePlatforms({})
 
   const [depositData, setDepositData] = useState({
     amount: "",
@@ -321,7 +321,7 @@ export function CreateTransactionDialog({ open, onOpenChange }: CreateTransactio
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="withdrawal-network">Network *</Label>
+                  <Label htmlFor="withdrawal-network">Rése *</Label>
                   <Select
                     value={withdrawalData.network}
                     onValueChange={(value) => setWithdrawalData({ ...withdrawalData, network: value })}

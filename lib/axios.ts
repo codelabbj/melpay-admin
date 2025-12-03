@@ -75,6 +75,7 @@ api.interceptors.response.use(
 
     const backendMsg =
       error.response?.data?.detail ||
+        error.response?.data?.details||
       error.response?.data?.error ||
       error.response?.data?.message ||
       (typeof error.response?.data === "string" ? error.response.data : fallback)
