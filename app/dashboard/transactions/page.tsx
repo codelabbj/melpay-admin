@@ -29,7 +29,6 @@ export default function TransactionsPage() {
 
   const { data: transactionsData, isLoading } = useTransactions(filters)
   const { data: networks } = useNetworks()
-    const checkTransactionStatus = useCheckTransactionStatus()
 
   const [createDialogOpen, setCreateDialogOpen] = useState(false)
   const [statusDialogOpen, setStatusDialogOpen] = useState(false)
