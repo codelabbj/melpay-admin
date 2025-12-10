@@ -34,6 +34,9 @@ export function PlatformDialog({ open, onOpenChange, platform }: PlatformDialogP
     name: "",
     image: "",
     enable: true,
+    hash: null,
+    cashdeskid: null,
+    cashierpass: null,
     deposit_tuto_link: null,
     withdrawal_tuto_link: null,
     why_withdrawal_fail: null,
@@ -44,14 +47,20 @@ export function PlatformDialog({ open, onOpenChange, platform }: PlatformDialogP
     max_deposit: 100000,
     minimun_with: 300,
     max_win: 1000000,
+    active_for_deposit: false,
+    active_for_with: false,
   })
 
   useEffect(() => {
     if (platform) {
+      // Clear authentication fields explicitly
       setFormData({
         name: platform.name,
         image: platform.image,
         enable: platform.enable,
+        hash: null,
+        cashdeskid: null,
+        cashierpass: null,
         deposit_tuto_link: platform.deposit_tuto_link,
         withdrawal_tuto_link: platform.withdrawal_tuto_link,
         why_withdrawal_fail: platform.why_withdrawal_fail,
@@ -62,6 +71,8 @@ export function PlatformDialog({ open, onOpenChange, platform }: PlatformDialogP
         max_deposit: platform.max_deposit,
         minimun_with: platform.minimun_with,
         max_win: platform.max_win,
+        active_for_deposit: platform.active_for_deposit,
+        active_for_with: platform.active_for_with,
       })
       setSelectedImage(platform.image)
     } else {
@@ -69,6 +80,9 @@ export function PlatformDialog({ open, onOpenChange, platform }: PlatformDialogP
         name: "",
         image: "",
         enable: true,
+        hash: null,
+        cashdeskid: null,
+        cashierpass: null,
         deposit_tuto_link: null,
         withdrawal_tuto_link: null,
         why_withdrawal_fail: null,
@@ -79,6 +93,8 @@ export function PlatformDialog({ open, onOpenChange, platform }: PlatformDialogP
         max_deposit: 100000,
         minimun_with: 300,
         max_win: 1000000,
+        active_for_deposit: false,
+        active_for_with: false,
       })
       setSelectedImage(null)
     }
@@ -102,9 +118,18 @@ export function PlatformDialog({ open, onOpenChange, platform }: PlatformDialogP
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
+    // Create payload excluding empty authentication fields
+    const payload = { ...formData }
+
+    // Remove empty authentication fields from payload
+    const submitData: any = { ...payload }
+    if (!submitData.hash || !submitData.hash.trim()) delete submitData.hash
+    if (!submitData.cashdeskid || !submitData.cashdeskid.trim()) delete submitData.cashdeskid
+    if (!submitData.cashierpass || !submitData.cashierpass.trim()) delete submitData.cashierpass
+
     if (platform && platform.id) {
       updatePlatform.mutate(
-        { id: platform.id, data: formData },
+        { id: platform.id, data: payload },
         {
           onSuccess: () => {
             onOpenChange(false)
@@ -112,6 +137,9 @@ export function PlatformDialog({ open, onOpenChange, platform }: PlatformDialogP
               name: "",
               image: "",
               enable: true,
+              hash: "",
+              cashdeskid: "",
+              cashierpass: "",
               deposit_tuto_link: null,
               withdrawal_tuto_link: null,
               why_withdrawal_fail: null,
@@ -122,6 +150,8 @@ export function PlatformDialog({ open, onOpenChange, platform }: PlatformDialogP
               max_deposit: 100000,
               minimun_with: 300,
               max_win: 1000000,
+              active_for_deposit: false,
+              active_for_with: false,
             })
             setSelectedImage(null)
             setFile(null)
@@ -130,7 +160,7 @@ export function PlatformDialog({ open, onOpenChange, platform }: PlatformDialogP
       )
     } else {
       createPlatform.mutate(
-        { data: formData, file: file ?? undefined },
+        { data: payload, file: file ?? undefined },
         {
           onSuccess: () => {
             onOpenChange(false)
@@ -138,6 +168,9 @@ export function PlatformDialog({ open, onOpenChange, platform }: PlatformDialogP
               name: "",
               image: "",
               enable: true,
+              hash: "",
+              cashdeskid: "",
+              cashierpass: "",
               deposit_tuto_link: null,
               withdrawal_tuto_link: null,
               why_withdrawal_fail: null,
@@ -148,6 +181,8 @@ export function PlatformDialog({ open, onOpenChange, platform }: PlatformDialogP
               max_deposit: 100000,
               minimun_with: 300,
               max_win: 1000000,
+              active_for_deposit: false,
+              active_for_with: false,
             })
             setSelectedImage(null)
             setFile(null)
@@ -290,6 +325,56 @@ export function PlatformDialog({ open, onOpenChange, platform }: PlatformDialogP
                 onChange={(e) =>
                   setFormData({ ...formData, order: e.target.value ? Number.parseInt(e.target.value) : null })
                 }
+                disabled={isPending}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="hash">Hash d'authentification</Label>
+              <Input
+                id="hash"
+                value={formData.hash || ""}
+                onChange={(e) => setFormData({ ...formData, hash: e.target.value || null })}
+                disabled={isPending}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="cashdeskid">ID Caisse</Label>
+              <Input
+                id="cashdeskid"
+                value={formData.cashdeskid || ""}
+                onChange={(e) => setFormData({ ...formData, cashdeskid: e.target.value || null })}
+                disabled={isPending}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="cashierpass">Mot de passe caissier</Label>
+              <Input
+                id="cashierpass"
+                value={formData.cashierpass || ""}
+                onChange={(e) => setFormData({ ...formData, cashierpass: e.target.value || null })}
+                disabled={isPending}
+              />
+            </div>
+
+            <div className="flex items-center justify-between space-x-2">
+              <Label htmlFor="active_for_deposit">Accepter les dépôts</Label>
+              <Switch
+                id="active_for_deposit"
+                checked={formData.active_for_deposit}
+                onCheckedChange={(checked) => setFormData({ ...formData, active_for_deposit: checked })}
+                disabled={isPending}
+              />
+            </div>
+
+            <div className="flex items-center justify-between space-x-2">
+              <Label htmlFor="active_for_with">Accepter les retraits</Label>
+              <Switch
+                id="active_for_with"
+                checked={formData.active_for_with}
+                onCheckedChange={(checked) => setFormData({ ...formData, active_for_with: checked })}
                 disabled={isPending}
               />
             </div>

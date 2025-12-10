@@ -103,6 +103,8 @@ export default function PlatformsPage() {
                       <TableHead className="font-semibold text-muted-foreground">Retrait Min</TableHead>
                       <TableHead className="font-semibold text-muted-foreground">Gain Max</TableHead>
                       <TableHead className="font-semibold text-muted-foreground">Localisation</TableHead>
+                      <TableHead className="font-semibold text-muted-foreground">Dépôt Actif</TableHead>
+                      <TableHead className="font-semibold text-muted-foreground">Retrait Actif</TableHead>
                       <TableHead className="font-semibold text-muted-foreground text-right">Actions</TableHead>
                     </TableRow>
                   </TableHeader>
@@ -121,6 +123,16 @@ export default function PlatformsPage() {
                         <TableCell className="text-foreground">{platform.max_win} FCFA</TableCell>
                         <TableCell className="text-muted-foreground text-sm">
                           {platform.city && platform.street ? `${platform.city}, ${platform.street}` : "-"}
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant={platform.active_for_deposit ? "default" : "secondary"} className="font-medium">
+                            {platform.active_for_deposit ? "Oui" : "Non"}
+                          </Badge>
+                        </TableCell>
+                        <TableCell>
+                          <Badge variant={platform.active_for_with ? "default" : "secondary"} className="font-medium">
+                            {platform.active_for_with ? "Oui" : "Non"}
+                          </Badge>
                         </TableCell>
                         <TableCell className="text-right">
                           <div className="flex justify-end gap-2">

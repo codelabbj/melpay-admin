@@ -10,6 +10,9 @@ export interface Platform {
   name: string
   image: string
   enable: boolean
+  hash: string | null
+  cashdeskid: string | null
+  cashierpass: string | null
   deposit_tuto_link: string | null
   withdrawal_tuto_link: string | null
   why_withdrawal_fail: string | null
@@ -20,6 +23,8 @@ export interface Platform {
   max_deposit: number
   minimun_with: number
   max_win: number
+  active_for_deposit: boolean
+  active_for_with: boolean
 }
 
 export interface PlatformFilters {
@@ -29,6 +34,8 @@ export interface PlatformFilters {
 
 
 export type PlatformInput = Omit<Platform, "id">
+
+export type PlatformUpdateInput = Partial<PlatformInput>
 
 export function usePlatforms(filters: PlatformFilters) {
   return useQuery({
@@ -68,7 +75,7 @@ export function useUpdatePlatform() {
     const queryClient = useQueryClient()
 
     return useMutation({
-        mutationFn: async ({ id, data }: { id: string; data: Partial<PlatformInput> }) => {
+        mutationFn: async ({ id, data }: { id: string; data: PlatformUpdateInput }) => {
             const res = await api.put<Platform>(`/mobcash/plateform/${id}`, data)
             return res.data
         },
