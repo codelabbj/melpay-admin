@@ -25,7 +25,7 @@ export default function CouponsPage() {
     const [page,setPage] = useState(1)
 
     const {data : coupons, isLoading} = useCoupon(page)
-    const {data : platforms} = usePlatforms()
+    const {data : platforms} = usePlatforms({})
     const deleteCoupon = useDeleteCoupon()
 
 
