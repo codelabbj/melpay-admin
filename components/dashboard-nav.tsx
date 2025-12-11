@@ -14,7 +14,6 @@ import {
     ArrowLeftRight,
     Settings,
     LayoutDashboard,
-    Wallet,
     Layers,
     Bot, Ticket, Megaphone,
 } from "lucide-react"
