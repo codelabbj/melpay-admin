@@ -3,7 +3,7 @@
 import {Button} from "@/components/ui/button";
 import {Loader2, Plus, Trash2, CheckCircle2, XCircle} from "lucide-react";
 import {Card, CardContent, CardDescription, CardHeader, CardTitle} from "@/components/ui/card";
-import TablePagination from "@/components/table-pagination";
+import ContentPagination from "@/components/content-pagination";
 import {
     AlertDialog, AlertDialogAction, AlertDialogCancel,
     AlertDialogContent,
@@ -133,7 +133,14 @@ export default function AdsPage() {
                                     </div>
                                 ))}
                             </div>
-                            <TablePagination page={page} pageSize={pageSize} total={ads.count} disableNextPage={!ads.next} disablePreviousPage={!ads.previous} onChangePage={setPage}/>
+                            <ContentPagination
+                                currentPage={page}
+                                itemsPerPage={pageSize}
+                                length={ads.count}
+                                startIndex={(page - 1) * pageSize}
+                                endIndex={Math.min(page * pageSize, ads.count)}
+                                onChangePage={setPage}
+                            />
                         </>
                     ) : (
                         <div className="text-center py-8 text-muted-foreground">Aucune publicité trouvée</div>
