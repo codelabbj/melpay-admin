@@ -14,7 +14,6 @@ import {
     ArrowLeftRight,
     Settings,
     LayoutDashboard,
-    Wallet,
     Layers,
     Bot, Ticket, Megaphone,
 } from "lucide-react"
@@ -33,7 +32,7 @@ const navItems = [
     {href: "/dashboard/advertisement", label: "Publicités", icon: Megaphone},
   { href: "/dashboard/bot-transactions", label: "Transactions Bot", icon: Bot },
   { href: "/dashboard/platforms", label: "Plateformes", icon: Layers },
-  { href: "/dashboard/deposits", label: "Dépôts & Caisses", icon: Wallet },
+  //{ href: "/dashboard/deposits", label: "Dépôts & Caisses", icon: Wallet },
   { href: "/dashboard/settings", label: "Paramètres", icon: Settings },
 ]
 

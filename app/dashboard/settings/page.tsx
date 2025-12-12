@@ -184,7 +184,8 @@ export default function SettingsPage() {
             </CardContent>
           </Card>
 
-          <Card>
+            {/* App version card
+                      <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
               <div>
                 <CardTitle>Version de l'App</CardTitle>
@@ -233,6 +234,9 @@ export default function SettingsPage() {
               </div>
             </CardContent>
           </Card>
+
+            */}
+
 
           <Card>
             <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-4">
@@ -455,7 +459,7 @@ export default function SettingsPage() {
           </DialogHeader>
           <div className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="bonus_percent">Pourcentage de Bonus (%)</Label>
+              <Label htmlFor="bonus_percent">Pourcentage de Bonus de Parrainage (%)</Label>
               <Input
                 id="bonus_percent"
                 type="number"
@@ -516,8 +520,8 @@ export default function SettingsPage() {
         </DialogContent>
       </Dialog>
 
-      {/* Version Dialog */}
-      <Dialog open={openDialog === "version"} onOpenChange={(open) => !open && setOpenDialog(null)}>
+      {/* Version Dialog
+            <Dialog open={openDialog === "version"} onOpenChange={(open) => !open && setOpenDialog(null)}>
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>Éditer Version de l'App</DialogTitle>
@@ -579,6 +583,7 @@ export default function SettingsPage() {
           </DialogFooter>
         </DialogContent>
       </Dialog>
+        */}
 
       {/* Contact & Links Dialog */}
       <Dialog open={openDialog === "contact"} onOpenChange={(open) => !open && setOpenDialog(null)}>
@@ -669,7 +674,7 @@ export default function SettingsPage() {
                 type="text"
                 value={editData.moov_marchand_phone || ""}
                 onChange={(e) => setEditData({ ...editData, moov_marchand_phone: e.target.value })}
-                placeholder="ex: +225XXXXXXXXXX"
+                placeholder="ex: XXXXXXXXXX"
               />
             </div>
             <div className="space-y-2">
@@ -679,7 +684,7 @@ export default function SettingsPage() {
                 type="text"
                 value={editData.orange_marchand_phone || ""}
                 onChange={(e) => setEditData({ ...editData, orange_marchand_phone: e.target.value })}
-                placeholder="ex: +225XXXXXXXXXX"
+                placeholder="ex: XXXXXXXXXX"
               />
             </div>
             <div className="space-y-2">
@@ -689,7 +694,7 @@ export default function SettingsPage() {
                 type="text"
                 value={editData.bf_moov_marchand_phone || ""}
                 onChange={(e) => setEditData({ ...editData, bf_moov_marchand_phone: e.target.value })}
-                placeholder="ex: +226XXXXXXXXXX"
+                placeholder="ex: XXXXXXXXXX"
               />
             </div>
             <div className="space-y-2">
@@ -699,7 +704,7 @@ export default function SettingsPage() {
                 type="text"
                 value={editData.bf_orange_marchand_phone || ""}
                 onChange={(e) => setEditData({ ...editData, bf_orange_marchand_phone: e.target.value })}
-                placeholder="ex: +226XXXXXXXXXX"
+                placeholder="ex: XXXXXXXXXX"
               />
             </div>
           </div>
