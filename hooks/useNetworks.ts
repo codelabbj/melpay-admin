@@ -23,6 +23,7 @@ export interface Network {
   deposit_message: string
   active_for_deposit: boolean
   active_for_with: boolean
+  manual_processing: boolean
 }
 
 export type NetworkInput = Omit<Network, "id" | "created_at">

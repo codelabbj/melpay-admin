@@ -65,6 +65,7 @@ export function NetworkDialog({ open, onOpenChange, network }: NetworkDialogProp
     deposit_message: "",
     active_for_deposit: true,
     active_for_with: true,
+    manual_processing: false,
   })
 
   useEffect(() => {
@@ -85,6 +86,7 @@ export function NetworkDialog({ open, onOpenChange, network }: NetworkDialogProp
         deposit_message: network.deposit_message,
         active_for_deposit: network.active_for_deposit,
         active_for_with: network.active_for_with,
+        manual_processing: network.manual_processing,
       })
       setSelectedImage(network.image)
     } else {
@@ -104,6 +106,7 @@ export function NetworkDialog({ open, onOpenChange, network }: NetworkDialogProp
         deposit_message: "",
         active_for_deposit: true,
         active_for_with: true,
+        manual_processing: false,
       })
       setSelectedImage(null)
     }
@@ -143,6 +146,7 @@ export function NetworkDialog({ open, onOpenChange, network }: NetworkDialogProp
                   deposit_message: network.deposit_message,
                   active_for_deposit: network.active_for_deposit,
                   active_for_with: network.active_for_with,
+                  manual_processing: network.manual_processing,
               })
               setSelectedImage(network.image)
           } else {
@@ -162,6 +166,7 @@ export function NetworkDialog({ open, onOpenChange, network }: NetworkDialogProp
                   deposit_message: "",
                   active_for_deposit: true,
                   active_for_with: true,
+                  manual_processing: false,
               })
               setSelectedImage(null)
           }
@@ -407,6 +412,16 @@ export function NetworkDialog({ open, onOpenChange, network }: NetworkDialogProp
                 id="active_for_with"
                 checked={formData.active_for_with}
                 onCheckedChange={(checked) => setFormData({ ...formData, active_for_with: checked })}
+                disabled={isPending}
+              />
+            </div>
+
+            <div className="flex items-center justify-between space-x-2">
+              <Label htmlFor="manual_processing">Traitement Manuel</Label>
+              <Switch
+                id="manual_processing"
+                checked={formData.manual_processing}
+                onCheckedChange={(checked) => setFormData({ ...formData, manual_processing: checked })}
                 disabled={isPending}
               />
             </div>
