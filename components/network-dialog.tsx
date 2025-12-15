@@ -4,6 +4,7 @@ import type React from "react"
 
 import { useState, useEffect } from "react"
 import { useCreateNetwork, useUpdateNetwork, type Network, type NetworkInput } from "@/hooks/useNetworks"
+import { toast } from "react-hot-toast"
 import {
   Dialog,
   DialogContent,
@@ -177,6 +178,12 @@ export function NetworkDialog({ open, onOpenChange, network }: NetworkDialogProp
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
+    // Validate image is provided
+    if (!file && !formData.image) {
+      toast.error("Veuillez télécharger une image pour le réseau")
+      return
+    }
+
     if (network) {
       updateNetwork.mutate(
         { id: network.id, data: formData,file:file??undefined },
@@ -207,7 +214,7 @@ export function NetworkDialog({ open, onOpenChange, network }: NetworkDialogProp
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label>Image du réseau</Label>
+            <Label>Image du réseau *</Label>
             <Input
               id="upload-input"
               type="file"

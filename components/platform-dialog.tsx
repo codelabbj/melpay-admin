@@ -4,6 +4,7 @@ import type React from "react"
 
 import { useState, useEffect } from "react"
 import { useCreatePlatform, useUpdatePlatform, type PlatformInput, type Platform } from "@/hooks/usePlatforms"
+import { toast } from "react-hot-toast"
 import {
   Dialog,
   DialogContent,
@@ -118,6 +119,12 @@ export function PlatformDialog({ open, onOpenChange, platform }: PlatformDialogP
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
 
+    // Validate image is provided
+    if (!file && !formData.image) {
+      toast.error("Veuillez télécharger une image pour la plateforme")
+      return
+    }
+
     // Create payload excluding empty authentication fields
     const payload = { ...formData }
 
@@ -206,7 +213,7 @@ export function PlatformDialog({ open, onOpenChange, platform }: PlatformDialogP
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="space-y-2">
-            <Label>Image de la plateforme</Label>
+            <Label>Image de la plateforme *</Label>
             <Input
               id="upload-input"
               type="file"
