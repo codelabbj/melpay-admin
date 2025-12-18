@@ -67,6 +67,7 @@ export function NetworkDialog({ open, onOpenChange, network }: NetworkDialogProp
     active_for_deposit: true,
     active_for_with: true,
     manual_processing: false,
+    customer_pay_fee: false,
   })
 
   useEffect(() => {
@@ -88,6 +89,7 @@ export function NetworkDialog({ open, onOpenChange, network }: NetworkDialogProp
         active_for_deposit: network.active_for_deposit,
         active_for_with: network.active_for_with,
         manual_processing: network.manual_processing,
+        customer_pay_fee: network.customer_pay_fee,
       })
       setSelectedImage(network.image)
     } else {
@@ -108,6 +110,7 @@ export function NetworkDialog({ open, onOpenChange, network }: NetworkDialogProp
         active_for_deposit: true,
         active_for_with: true,
         manual_processing: false,
+        customer_pay_fee: false,
       })
       setSelectedImage(null)
     }
@@ -148,6 +151,7 @@ export function NetworkDialog({ open, onOpenChange, network }: NetworkDialogProp
                   active_for_deposit: network.active_for_deposit,
                   active_for_with: network.active_for_with,
                   manual_processing: network.manual_processing,
+                  customer_pay_fee: network.customer_pay_fee,
               })
               setSelectedImage(network.image)
           } else {
@@ -168,6 +172,7 @@ export function NetworkDialog({ open, onOpenChange, network }: NetworkDialogProp
                   active_for_deposit: true,
                   active_for_with: true,
                   manual_processing: false,
+                  customer_pay_fee: false,
               })
               setSelectedImage(null)
           }
@@ -432,6 +437,18 @@ export function NetworkDialog({ open, onOpenChange, network }: NetworkDialogProp
                 disabled={isPending}
               />
             </div>
+
+            {formData.withdrawal_api === "connect" && (
+              <div className="flex items-center justify-between space-x-2">
+                <Label htmlFor="customer_pay_fee">Client Paye les Frais</Label>
+                <Switch
+                  id="customer_pay_fee"
+                  checked={formData.customer_pay_fee}
+                  onCheckedChange={(checked) => setFormData({ ...formData, customer_pay_fee: checked })}
+                  disabled={isPending}
+                />
+              </div>
+            )}
           </div>
 
           <DialogFooter>

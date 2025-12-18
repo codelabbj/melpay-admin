@@ -24,6 +24,7 @@ export interface Network {
   active_for_deposit: boolean
   active_for_with: boolean
   manual_processing: boolean
+  customer_pay_fee: boolean
 }
 
 export type NetworkInput = Omit<Network, "id" | "created_at">

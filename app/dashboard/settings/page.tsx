@@ -54,6 +54,7 @@ export default function SettingsPage() {
         wave_default_link: settings.wave_default_link,
         orange_default_link: settings.orange_default_link,
         mtn_default_link: settings.mtn_default_link,
+        telegram: settings.telegram,
       })
     } else if (section === "merchant") {
       setEditData({
@@ -259,6 +260,13 @@ export default function SettingsPage() {
                   <Badge variant="outline">{settings.whatsapp_phone || "N/A"}</Badge>
                 </div>
                 <p className="text-xs text-muted-foreground">Numéro de support WhatsApp pour les utilisateurs</p>
+              </div>
+              <div>
+                <div className="flex justify-between items-center mb-1">
+                  <span className="text-sm font-medium">Télégram</span>
+                  <Badge variant="outline">{settings.telegram || "N/A"}</Badge>
+                </div>
+                <p className="text-xs text-muted-foreground">Lien ou identifiant Télégram pour le support</p>
               </div>
               <div>
                 <div className="flex justify-between items-center mb-1">
@@ -601,6 +609,16 @@ export default function SettingsPage() {
                 value={editData.whatsapp_phone || ""}
                 onChange={(e) => setEditData({ ...editData, whatsapp_phone: e.target.value })}
                 placeholder="ex: +225XXXXXXXXXX"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="telegram">Télégram</Label>
+              <Input
+                id="telegram"
+                type="text"
+                value={editData.telegram || ""}
+                onChange={(e) => setEditData({ ...editData, telegram: e.target.value })}
+                placeholder="ex: @username ou https://t.me/username"
               />
             </div>
             <div className="space-y-2">
